@@ -7,6 +7,7 @@ import {
   mdiTable,
   mdiListBoxOutline,
   mdiAccount,
+  mdiAccountSupervisor,
   mdiTelevisionGuide,
 } from '@mdi/js'
 import { MenuAsideItem } from './interfaces'
@@ -21,6 +22,11 @@ const menuAside: MenuAsideItem[] = [
     href: '/adduser',
     label: 'User',
     icon: mdiAccount,
+  },
+  {
+    href: '/subadmin',
+    label: 'Sub Admin',
+    icon: mdiAccountSupervisor,
   },
   // {
   //   href: '/todolist',

@@ -92,8 +92,7 @@ const menuNavBar: MenuNavBarItem[] = [
     // icon: mdiAccount,
     label: 'My Profile',
     href: '/profile',
-
-  }
+  },
 ]
 
 export default menuNavBar
