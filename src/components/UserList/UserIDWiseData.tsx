@@ -115,9 +115,9 @@ const UserIDWiseData = () => {
   const [userImage, setUserImage] = useState<any>([])
   const [userBio, setUserBio] = useState<any>([])
   const [userFile, setUserFile] = useState<any>([])
-  console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_1?.slice(27))
-  console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_2?.slice(27))
-  console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_3?.slice(27))
+  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_1?.slice(27))
+  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_2?.slice(27))
+  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_3?.slice(27))
 
   // const [userFiles, setUserFiles] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -171,17 +171,33 @@ const UserIDWiseData = () => {
 
   // Get ID wise  User Show
   const getUserdata = async () => {
-    const { id } = router.query
-    await axiosInstanceAuth
-      .get(`admin/findUserData/${id}`)
-      .then((res) => {
-        const myData = res?.data
-        setUserData(myData?.data || [])
-        setUserAddress(myData?.data?.address || [])
-        setUserBusinessAddress(myData?.data?.businessaddress || [])
-        setUserProfessionalDetails(myData?.data?.professionalDetails || [])
-        setUserYourself(myData?.data?.yourself || [])
-        setUserLookingfor(myData?.data?.lookingfor || [])
+    const { id } = router.query;
+    console.log("Fetching user data for ID:00000++>", id);
+  
+    if (!id) {
+      console.error('No user ID found in router query.');
+      return;
+    }
+  
+    try {
+      // Check if the user ID belongs to a deleted user
+      const res = await axiosInstanceAuth.get(`/admin/getDeleteUserProfile/${id}`);
+      const myData = res.data.profile;
+      console.log('User Data:--->', myData);
+
+      const isDeleted = myData?.isDeleted;
+  
+      if (isDeleted) {
+        // Fetch deleted user data
+        const res = await axiosInstanceAuth.get(`/admin/getDeleteUserProfile/${id}`);
+        const myData = res?.data;
+        console.log('Deleted User Data-->:', myData);
+        setUserData(myData?.profile || []);
+        setUserAddress(myData?.profile?.address || []);
+        setUserBusinessAddress(myData?.profile?.businessaddress || []);
+        setUserProfessionalDetails(myData?.profile?.professionalDetails || []);
+        setUserYourself(myData?.profile?.yourself || []);
+        setUserLookingfor(myData?.profile?.lookingfor || []);
         setUserImage([
           myData.profileData.image.photo_1 || '',
           myData.profileData.image.photo_2 || '',
@@ -189,8 +205,7 @@ const UserIDWiseData = () => {
           myData.profileData.image.photo_4 || '',
           myData.profileData.image.photo_5 || '',
           myData.profileData.image.photo_6 || '',
-        ])
-
+        ]);
         setUserMedia([
           myData.profileData.image.photo_1 || '',
           myData.profileData.image.photo_2 || '',
@@ -198,27 +213,57 @@ const UserIDWiseData = () => {
           myData.profileData.image.photo_4 || '',
           myData.profileData.image.photo_5 || '',
           myData.profileData.image.photo_6 || '',
-        ])
-        setUserBio(myData?.profileData)
-        // setUserFile(myData?.profileData?.file)
+        ]);
+        setUserBio(myData?.profileData);
         setUserFile({
           file_1: myData?.profileData?.file?.file_1,
           file_2: myData?.profileData?.file?.file_2,
           file_3: myData?.profileData?.file?.file_3,
-        })
-
-        console.log('ID wise User data show--->', myData)
-      })
-      .catch((err) => {
-        console.log('err --->', err)
-      })
-  }
-
-  // CompanyListData
-
+        });
+      } else {
+        // Fetch active user data
+        const res = await axiosInstanceAuth.get(`/admin/findUserData/${id}`);
+        const myData = res?.data;
+        console.log('Active User Data:--->', myData);
+        setUserData(myData?.data || []);
+        setUserAddress(myData?.data?.address || []);
+        setUserBusinessAddress(myData?.data?.businessaddress || []);
+        setUserProfessionalDetails(myData?.data?.professionalDetails || []);
+        setUserYourself(myData?.data?.yourself || []);
+        setUserLookingfor(myData?.data?.lookingfor || []);
+        setUserImage([
+          myData.profileData.image.photo_1 || '',
+          myData.profileData.image.photo_2 || '',
+          myData.profileData.image.photo_3 || '',
+          myData.profileData.image.photo_4 || '',
+          myData.profileData.image.photo_5 || '',
+          myData.profileData.image.photo_6 || '',
+        ]);
+        setUserMedia([
+          myData.profileData.image.photo_1 || '',
+          myData.profileData.image.photo_2 || '',
+          myData.profileData.image.photo_3 || '',
+          myData.profileData.image.photo_4 || '',
+          myData.profileData.image.photo_5 || '',
+          myData.profileData.image.photo_6 || '',
+        ]);
+        setUserBio(myData?.profileData);
+        setUserFile({
+          file_1: myData?.profileData?.file?.file_1,
+          file_2: myData?.profileData?.file?.file_2,
+          file_3: myData?.profileData?.file?.file_3,
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching user data:', err.response || err.message || err);
+    }
+  };
+  
   useEffect(() => {
-    getUserdata()
-  }, [])
+    if (router.query.id) {
+      getUserdata();
+    }
+  }, [router.query.id]);
 
   return (
     <>
