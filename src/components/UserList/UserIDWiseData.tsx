@@ -163,6 +163,8 @@ const UserIDWiseData = () => {
 
   const numPages = clients.length / perPage
 
+  const defaultImage = 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
+
   const pagesList = []
 
   for (let i = 0; i < numPages; i++) {
@@ -317,14 +319,25 @@ const UserIDWiseData = () => {
         <div className="rounded-lg p-5 shadow-lg">
           <div className="flex gap-8">
             <div>
-              <Image
+              {/* <Image
                 src={`${BACKEND_BASE_URL}${userData?.profileImage}`}
                 // src={pairme}
                 alt="companylogo"
                 width={220}
                 height={220}
                 className="rounded-lg"
-              />
+              /> */}
+              <Image
+        src={`${BACKEND_BASE_URL}${userData?.profileImage}`}
+        alt="user profile"
+        width={220}
+        height={220}
+        className="rounded-lg"
+        onError={(e) => {
+          e.target.onerror = null; // Prevent infinite loops in case the default image also fails to load
+          e.target.src = defaultImage; // Set default image path here
+        }}
+      />
             </div>
 
             <table className="shadow-xl rounded-lg">

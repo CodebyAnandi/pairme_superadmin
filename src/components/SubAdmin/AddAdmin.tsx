@@ -30,15 +30,15 @@ const AddAdmin = ({ searchUser = '' }) => {
 
   const pagesList = Array.from({ length: numPages }, (_, index) => index)
 
-  const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const [isModalTrashActive, setIsModalTrashActive] = useState(false)
+  // const [isModalInfoActive, setIsModalInfoActive] = useState(false)
+  // const [isModalTrashActive, setIsModalTrashActive] = useState(false)
 
   const [newUser, setNewUser] = useState({
-    firstname: '',
+    name: '',
     lastname: '',
     email: '',
     dateOfBirth: '',
-    number: '',
+    phoneNumber: '',
     password: '',
     permissions: {
       delete: false,
@@ -66,9 +66,27 @@ const AddAdmin = ({ searchUser = '' }) => {
     }
   }
 
+  const submitForm = async () => {
+    try {
+      const res = await axiosInstanceAuth.post('/admin/createSubAdmin', newUser)
+      console.log('SubAdmin created successfully', res.data)
+      // Optionally, you can refresh the list of sub-admins after successful creation
+      getAdmindata()
+    } catch (err) {
+      console.error('Error creating sub-admin:', err)
+    }
+  }
+
   const handleModalAction = () => {
-    setIsModalInfoActive(false)
-    setIsModalTrashActive(false)
+    submitForm()
+    // setIsModalInfoActive(false)
+    // setIsModalTrashActive(false)
+    setIsModalAddUserActive(false)
+  }
+
+  const handleCancelAction = () => {
+    // setIsModalInfoActive(false)
+    // setIsModalTrashActive(false)
     setIsModalAddUserActive(false)
   }
 
@@ -133,18 +151,18 @@ const AddAdmin = ({ searchUser = '' }) => {
       <CardBoxModal
         title="Add User"
         buttonColor="danger"
-        buttonLabel="Confirm"
+        buttonLabel="Submit"
         isActive={isModalAddUserActive}
         onConfirm={handleModalAction}
-        onCancel={handleModalAction}
+        onCancel={handleCancelAction}
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">First Name</label>
             <input
               type="text"
-              name="firstname"
-              value={newUser.firstname}
+              name="name"
+              value={newUser.name}
               onChange={handleAddUserChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             />
@@ -183,8 +201,8 @@ const AddAdmin = ({ searchUser = '' }) => {
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
               type="text"
-              name="number"
-              value={newUser.number}
+              name="phoneNumber"
+              value={newUser.phoneNumber}
               onChange={handleAddUserChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             />
@@ -257,8 +275,8 @@ const AddAdmin = ({ searchUser = '' }) => {
         <thead>
           <tr>
             <th>First Name</th>
-            <th>Last Address</th>
-            <th>Email</th>
+            <th>Last Name</th>
+            <th>Email Address</th>
             <th>Date of Birth</th>
             <th className="whitespace-nowrap">Phone Number</th>
             <th>Options</th>
@@ -280,12 +298,12 @@ const AddAdmin = ({ searchUser = '' }) => {
               })
               .map((d, index) => (
                 <tr key={index}>
-                  <td data-label="Name">{d.firstname}</td>
+                  <td data-label="Name">{d.name}</td>
                   <td data-label="Name">{d.lastname}</td>
                   <td data-label="Email">{d.email}</td>
                   <td data-label="Dob">{d.dateOfBirth}</td>
                   <td data-label="Phone" className="whitespace-nowrap">
-                    {d.number}
+                    {d.phoneNumber}
                   </td>
 
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
