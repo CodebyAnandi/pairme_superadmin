@@ -194,7 +194,7 @@ import CardBoxModal from '../CardBox/Modal'
 
 import axiosInstanceAuth from '../../apiInstances/axiosInstanceAuth'
 
-const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
+const TableAddUser = ({ searchUser = '' }) => {
   const router = useRouter()
   const perPage = 10
 
@@ -214,6 +214,8 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
 
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
+  const [user, setUser] = useState()
+  console.log("adduserdata",user)
 
   const handleModalAction = () => {
     setIsModalInfoActive(false)
@@ -244,6 +246,26 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
     getAdmindata()
   }, [])
 
+  useEffect(() => {
+    const token = localStorage.getItem('Token')
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('http://localhost:3334/api/admin/loggedUserInfo', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const data = await response.json()
+        setUser(data)
+      } catch (error) {
+        console.error('Failed to fetch user data:', error)
+      }
+    }
+
+    fetchUserData()
+  }, [])
+
   const handleClickEye = (_id) => {
     router.push(`userlist/${_id}`)
   }
@@ -271,7 +293,7 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
 
   return (
     <>
-      <CardBoxModal
+      {/* <CardBoxModal
         title="Sample modal"
         buttonColor="info"
         buttonLabel="Done"
@@ -283,9 +305,9 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
           Lorem ipsum dolor sit amet <b>adipiscing elit</b>
         </p>
         <p>This is a sample modal</p>
-      </CardBoxModal>
+      </CardBoxModal> */}
 
-      <CardBoxModal
+      {/* <CardBoxModal
         title="Please confirm"
         buttonColor="danger"
         buttonLabel="Confirm"
@@ -297,7 +319,7 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
           Lorem ipsum dolor sit amet <b>adipiscing elit</b>
         </p>
         <p>This is a sample modal</p>
-      </CardBoxModal>
+      </CardBoxModal> */}
 
       <CardBoxModal
         title="Add User"
@@ -316,7 +338,12 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
       <div className="flex justify-between mb-4">
         <div>
           <Button label="ALL" color="lightDark" onClick={handleShowAllUsers} />
-          <Button label="Deleted" color="lightDark" onClick={handleShowDeleteUsers} className="ml-2" />
+          <Button
+            label="Deleted"
+            color="lightDark"
+            onClick={handleShowDeleteUsers}
+            className="ml-2"
+          />
         </div>
       </div>
 
@@ -350,16 +377,37 @@ const TableAddUser = ({ searchUser = '', userRole, userPermissions }) => {
                   <td data-label="Name">{d.name}</td>
                   <td data-label="Email">{d.email}</td>
                   <td data-label="Dob">{d.dateOfBirth}</td>
-                  <td data-label="Phone" className="whitespace-nowrap">{d.phoneNumber}</td>
+                  <td data-label="Phone" className="whitespace-nowrap">
+                    {d.phoneNumber}
+                  </td>
                   <td data-label="Gender">{d.gender}</td>
 
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
                     <Buttons type="justify-center " noWrap>
-                      <Button color="info" icon={mdiEye} onClick={() => handleClickEye(d?._id)} small />
+                      <Button
+                        color="info"
+                        icon={mdiEye}
+                        onClick={() => handleClickEye(d?._id)}
+                        small
+                      />
                       {/* Render delete button only if user is not sub_admin or has delete permission */}
-                      {userRole !== 'sub_admin' || userPermissions.delete ? (
-                        <Button color="danger" icon={mdiTrashCan} onClick={() => handleDeleteUser(d?._id)} small />
-                      ) : null}
+                      {user && user.length > 0 && user[0].permissions.delete === true ? (
+                        <Button
+                          color="danger"
+                          icon={mdiTrashCan}
+                          onClick={() => handleDeleteUser(d?._id)}
+                          small
+                        />
+                      ) : (
+                        <Button
+                          color="danger"
+                          icon={mdiTrashCan}
+                          onClick={() => handleDeleteUser(d?._id)}
+                          small
+                          outline
+                          disabled
+                        />
+                      )}
                     </Buttons>
                   </td>
                 </tr>

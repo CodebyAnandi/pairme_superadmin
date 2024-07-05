@@ -23,13 +23,39 @@ type Props = {
 export default function LayoutAuthenticated({ children }: Props) {
   const dispatch = useAppDispatch()
 
+  const [adminInfo, setAdminInfo] = useState({});
+  console.log("00->",adminInfo)
+
+  console.log("adminInfo",adminInfo)
+
+  useEffect(() => {
+    const token = localStorage.getItem('Token')
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('http://localhost:3334/api/admin/loggedUserInfo', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const data = await response.json();
+        setAdminInfo(data[0]);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error)
+      }
+    }
+
+    fetchUserData()
+  }, [])
+
   useEffect(() => {
     dispatch(
       setUser({
-        name: 'Admin',
-        email: 'admin@gmail.com',
+        name: `${adminInfo.name || "admin"}`,
+        email: `${adminInfo.email || "admin@gmail.com"}`,
         avatar:
-          'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93',
+          // 'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93',
+          'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
       })
     )
   })

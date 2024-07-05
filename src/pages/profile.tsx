@@ -200,7 +200,7 @@ import {
 } from '@mdi/js'
 import { Formik, Form, Field } from 'formik'
 import Head from 'next/head'
-import type { ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import axios from 'axios'
 import Button from '../components/Button'
 import Buttons from '../components/Buttons'
@@ -221,6 +221,8 @@ import { useAppSelector } from '../stores/hooks'
 const ProfilePage = () => {
   const userName = useAppSelector((state) => state.main.userName)
   const userEmail = useAppSelector((state) => state.main.userEmail)
+  const [userInfo, setUserInfo] = useState()
+  console.log('-->', userInfo)
 
   const userForm: UserForm = {
     name: userName,
@@ -228,45 +230,49 @@ const ProfilePage = () => {
   }
 
   const handlePasswordChange = async (values, { setSubmitting }) => {
-    console.log('Sending request to API with values:', values); // Debugging log
+    console.log('Sending request to API with values:', values) // Debugging log
     try {
       // Get the JWT token from wherever you stored it (localStorage, etc.)
-      const token = localStorage.getItem('Token'); // Adjust as per your actual storage method
+      const token = localStorage.getItem('Token') // Adjust as per your actual storage method
       console.log(token)
 
-      const response = await axios.post('http://localhost:3334/api/admin/changeAdminPassword', {
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-        newPasswordConfirmation: values.newPasswordConfirmation,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      const response = await axios.post(
+        'http://localhost:3334/api/admin/changeAdminPassword',
+        {
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+          newPasswordConfirmation: values.newPasswordConfirmation,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        }
+      )
 
-      console.log(response.data); // Log the response for debugging
-      alert('Password changed successfully');
+      console.log(response.data) // Log the response for debugging
+      alert('Password changed successfully')
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         console.log(error.response.data.message)
-        alert(`Error: ${error.response.data.message}`);
+        alert(`Error: ${error.response.data.message}`)
       } else {
-        alert('Error changing password');
+        alert('Error changing password')
       }
-      console.error('Error:', error);
+      console.error('Error:', error)
     } finally {
-      setSubmitting(false); // Ensure to set submitting to false regardless of success or failure
+      setSubmitting(false) // Ensure to set submitting to false regardless of success or failure
     }
-  };
+  }
 
   const handleNameEmailChange = async (values, { setSubmitting }) => {
-    console.log('Sending request to API with values:', values); // Debugging log
-  
+    console.log('Sending request to API with values:', values) // Debugging log
+
     try {
       // Get the JWT token from wherever you stored it (localStorage, etc.)
-      const token = localStorage.getItem('Token'); // Adjust as per your actual storage method
+      const token = localStorage.getItem('Token') // Adjust as per your actual storage method
       console.log(token)
-  
+
       const response = await axios.post(
         'http://localhost:3334/api/admin/changeAdminNameEmail',
         {
@@ -278,22 +284,25 @@ const ProfilePage = () => {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
         }
-      );
-  
-      console.log(response.data); // Log the response for debugging
-      alert('Name and email changed successfully');
+      )
+
+      console.log(response.data) // Log the response for debugging
+      alert('Name and email changed successfully')
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
-        alert(`Error: ${error.response.data.message}`);
+        alert(`Error: ${error.response.data.message}`)
       } else {
-        alert('Error changing name and email');
+        alert('Error changing name and email')
       }
-      console.error('Error:', error);
+      console.error('Error:', error)
     } finally {
-      setSubmitting(false); // Ensure to set submitting to false regardless of success or failure
+      setSubmitting(false) // Ensure to set submitting to false regardless of success or failure
     }
-  };
-  
+  }
+
+  const getUserInfo = (userInfo) => {
+    setUserInfo(userInfo)
+  }
 
   return (
     <>
@@ -308,7 +317,7 @@ const ProfilePage = () => {
           main
         ></SectionTitleLineWithButton>
 
-        <CardBoxUser className="mb-6" />
+        <CardBoxUser className="mb-6" getUserInfo={getUserInfo} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="flex flex-col">
@@ -319,10 +328,7 @@ const ProfilePage = () => {
             </CardBox>
 
             <CardBox className="flex-1" hasComponentLayout>
-              <Formik
-                initialValues={userForm}
-                onSubmit={handleNameEmailChange}
-              >
+              <Formik initialValues={userForm} onSubmit={handleNameEmailChange}>
                 <Form className="flex flex-col flex-1">
                   <CardBoxComponentBody>
                     <FormField
@@ -343,10 +349,17 @@ const ProfilePage = () => {
                     </FormField>
                   </CardBoxComponentBody>
                   <CardBoxComponentFooter>
-                    <Buttons>
-                      <Button color="info" type="submit" label="Submit" />
-                      <Button color="info" label="Options" outline />
-                    </Buttons>
+                    {userInfo && userInfo.length > 0 && userInfo[0].role === 'admin' ? (
+                      <Buttons>
+                        <Button color="info" type="submit" label="Submit" />
+                        <Button color="info" label="Options" outline />
+                      </Buttons>
+                    ) : (
+                      <Buttons>
+                        <Button color="info" type="submit" label="Submit" outline disabled />
+                        <Button color="info" label="Options" outline disabled />
+                      </Buttons>
+                    )}
                   </CardBoxComponentFooter>
                 </Form>
               </Formik>
@@ -410,10 +423,21 @@ const ProfilePage = () => {
                 </CardBoxComponentBody>
 
                 <CardBoxComponentFooter>
-                  <Buttons>
+                  {/* <Buttons>
                     <Button color="info" type="submit" label="Submit" />
                     <Button color="info" label="Options" outline />
-                  </Buttons>
+                  </Buttons> */}
+                  {userInfo && userInfo.length > 0 && userInfo[0].role === 'admin' ? (
+                    <Buttons>
+                      <Button color="info" type="submit" label="Submit" />
+                      <Button color="info" label="Options" outline />
+                    </Buttons>
+                  ) : (
+                    <Buttons>
+                      <Button color="info" type="submit" label="Submit" outline disabled />
+                      <Button color="info" label="Options" outline disabled />
+                    </Buttons>
+                  )}
                 </CardBoxComponentFooter>
               </Form>
             </Formik>
@@ -429,4 +453,3 @@ ProfilePage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export default ProfilePage
-

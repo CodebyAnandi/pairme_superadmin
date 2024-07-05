@@ -24,6 +24,28 @@ const AsideMenuItem = ({ item, isDropdownList = false }: Props) => {
   const activeClassAddon = !item.color && isLinkActive ? asideMenuItemActiveStyle : ''
 
   const { asPath, isReady } = useRouter()
+  const [user,setUser] = useState()
+  console.log(user)
+
+  useEffect(() => {
+    const token = localStorage.getItem('Token')
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('http://localhost:3334/api/admin/loggedUserInfo', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const data = await response.json()
+        setUser(data)
+      } catch (error) {
+        console.error('Failed to fetch user data:', error)
+      }
+    }
+
+    fetchUserData()
+  }, [])
 
   useEffect(() => {
     if (item.href && isReady) {

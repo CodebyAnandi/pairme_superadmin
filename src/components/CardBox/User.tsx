@@ -60,7 +60,7 @@ type Props = {
   className?: string
 }
 
-const CardBoxUser = ({ className }: Props) => {
+const CardBoxUser = ({ className , getUserInfo }: Props) => {
   const [user, setUser] = useState(null)
   console.log(user)
 
@@ -76,6 +76,7 @@ const CardBoxUser = ({ className }: Props) => {
         })
         const data = await response.json()
         setUser(data)
+        getUserInfo(data)
       } catch (error) {
         console.error('Failed to fetch user data:', error)
       }

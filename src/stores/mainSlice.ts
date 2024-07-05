@@ -11,8 +11,8 @@ interface MainState {
 const initialState: MainState = {
   /* User */
   userName: '',
-  userEmail: null,
-  userAvatar: null,
+  userEmail: "",
+  userAvatar: "",
 
   /* Field focus with ctrl+k (to register only once) */
   isFieldFocusRegistered: false,
