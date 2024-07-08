@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@mdi/js": "^7.0.96",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.6.5",
     "chart.js": "^3.9.1",
     "formik": "^2.4.2",

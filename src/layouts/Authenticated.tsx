@@ -1,95 +1,68 @@
-import React, { ReactNode, useEffect } from 'react'
-import { useState } from 'react'
-import { mdiForwardburger, mdiBackburger, mdiMenu } from '@mdi/js'
-import menuAside from '../menuAside'
-import menuNavBar from '../menuNavBar'
-import Icon from '../components/Icon'
-import NavBar from '../components/NavBar'
-import NavBarItemPlain from '../components/NavBar/Item/Plain'
-import AsideMenu from '../components/AsideMenu'
-import FooterBar from '../components/FooterBar'
-import { setUser } from '../stores/mainSlice'
-import { useAppDispatch, useAppSelector } from '../stores/hooks'
-import FormField from '../components/Form/Field'
-import { Field, Form, Formik } from 'formik'
-import { useRouter } from 'next/router'
-
-import parime from '../assets/img/pairmelogo.png'
+import React, { ReactNode, useEffect } from 'react';
+import { useState } from 'react';
+import { mdiForwardburger, mdiBackburger, mdiMenu } from '@mdi/js';
+import menuAside from '../menuAside';
+import menuNavBar from '../menuNavBar';
+import Icon from '../components/Icon';
+import NavBar from '../components/NavBar';
+import NavBarItemPlain from '../components/NavBar/Item/Plain';
+import AsideMenu from '../components/AsideMenu';
+import { setUser } from '../stores/mainSlice';
+import { fetchLoggedUserInfo } from '../stores/adminSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 type Props = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
 export default function LayoutAuthenticated({ children }: Props) {
-  const dispatch = useAppDispatch()
-
-  const [adminInfo, setAdminInfo] = useState({});
-  console.log("00->",adminInfo)
-
-  console.log("adminInfo",adminInfo)
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.loggedUser.userInfo);
+  const darkMode = useSelector((state) => state.style.darkMode);
+  const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false);
+  const [isAsideLgActive, setIsAsideLgActive] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('Token')
+    dispatch(fetchLoggedUserInfo());
+  }, [dispatch]);
 
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('http://localhost:3334/api/admin/loggedUserInfo', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+  // Check if userInfo exists and is not null before accessing properties
+  const userData = userInfo && userInfo[0];
+
+  useEffect(() => {
+    // Only dispatch setUser when userData is defined
+    if (userData) {
+      dispatch(
+        setUser({
+          name:userData.name + ` (${userData.role})` || "admin",
+          email: userData.email || "admin@gmail.com",
+          avatar: 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
         })
-        const data = await response.json();
-        setAdminInfo(data[0]);
-      } catch (error) {
-        console.error('Failed to fetch user data:', error)
-      }
+      );
     }
-
-    fetchUserData()
-  }, [])
-
-  useEffect(() => {
-    dispatch(
-      setUser({
-        name: `${adminInfo.name || "admin"}`,
-        email: `${adminInfo.email || "admin@gmail.com"}`,
-        avatar:
-          // 'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93',
-          'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
-      })
-    )
-  })
-
-  const darkMode = useAppSelector((state) => state.style.darkMode)
-
-  const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false)
-  const [isAsideLgActive, setIsAsideLgActive] = useState(false)
-
-  const router = useRouter()
+  }, [userData, dispatch]);
 
   useEffect(() => {
     const handleRouteChangeStart = () => {
-      setIsAsideMobileExpanded(false)
-      setIsAsideLgActive(false)
-    }
+      setIsAsideMobileExpanded(false);
+      setIsAsideLgActive(false);
+    };
 
-    router.events.on('routeChangeStart', handleRouteChangeStart)
+    router.events.on('routeChangeStart', handleRouteChangeStart);
 
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method:
     return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart)
-    }
-  }, [router.events, dispatch])
+      router.events.off('routeChangeStart', handleRouteChangeStart);
+    };
+  }, [router.events]);
 
-  const layoutAsidePadding = 'xl:pl-60'
+  const layoutAsidePadding = 'xl:pl-60';
 
   return (
     <div className={`${darkMode ? 'dark' : ''} overflow-hidden lg:overflow-visible`}>
       <div
-        className={`${layoutAsidePadding} ${
-          isAsideMobileExpanded ? 'ml-60 lg:ml-0' : ''
-        } pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100`}
+        className={`${layoutAsidePadding} ${isAsideMobileExpanded ? 'ml-60 lg:ml-0' : ''} pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-50 dark:bg-slate-800 dark:text-slate-100`}
       >
         <NavBar
           menu={menuNavBar}
@@ -107,20 +80,6 @@ export default function LayoutAuthenticated({ children }: Props) {
           >
             <Icon path={mdiMenu} size="24" />
           </NavBarItemPlain>
-          {/* <NavBarItemPlain useMargin>
-            <Formik
-              initialValues={{
-                search: '',
-              }}
-              onSubmit={(values) => alert(JSON.stringify(values, null, 2))}
-            >
-              <Form>
-                <FormField isBorderless isTransparent>
-                  <Field name="search" placeholder="Search" />
-                </FormField>
-              </Form>
-            </Formik>
-          </NavBarItemPlain> */}
         </NavBar>
         <AsideMenu
           isAsideMobileExpanded={isAsideMobileExpanded}
@@ -129,18 +88,7 @@ export default function LayoutAuthenticated({ children }: Props) {
           onAsideLgClose={() => setIsAsideLgActive(false)}
         />
         {children}
-        {/* <FooterBar>
-          Get more with{` `}
-          <a
-            href="https://tailwind-react.justboil.me/dashboard"
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-600"
-          >
-            Premium version
-          </a>
-        </FooterBar> */}
       </div>
     </div>
-  )
+  );
 }
