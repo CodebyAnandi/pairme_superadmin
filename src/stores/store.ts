@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import styleReducer from './styleSlice'
 import mainReducer from './mainSlice'
 import loggedUserReducer from './adminSlice'
+import reportUserReducer from './reportSlice'
 
 export const store = configureStore({
   reducer: {
     style: styleReducer,
     main: mainReducer,
     loggedUser: loggedUserReducer,
+    reportUser:reportUserReducer
   },
 })
 

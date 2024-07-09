@@ -30,6 +30,8 @@ export default function LayoutAuthenticated({ children }: Props) {
 
   // Check if userInfo exists and is not null before accessing properties
   const userData = userInfo && userInfo[0];
+  // console.log('=====-99>>>>',userData)
+  const defaultImage = 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
 
   useEffect(() => {
     // Only dispatch setUser when userData is defined
@@ -38,7 +40,8 @@ export default function LayoutAuthenticated({ children }: Props) {
         setUser({
           name:userData.name + ` (${userData.role})` || "admin",
           email: userData.email || "admin@gmail.com",
-          avatar: 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
+          avatar: `http://192.168.29.113:3334/${userData.profileImage || defaultImage}`,
+          // avatar: 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'
         })
       );
     }
