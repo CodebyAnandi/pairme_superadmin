@@ -15,7 +15,7 @@ import { GiSkills } from 'react-icons/gi'
 import { BsDiagram3Fill } from 'react-icons/bs'
 import { FaCircleUser, FaFileLines } from 'react-icons/fa6'
 import { RiContactsFill } from 'react-icons/ri'
-import { PiFilesFill } from 'react-icons/pi'
+// import { PiFilesFill } from 'react-icons/pi'
 import { LuFiles } from 'react-icons/lu'
 import { IoMdClose } from 'react-icons/io'
 
@@ -25,7 +25,7 @@ import { BACKEND_BASE_URL } from '../../apiInstances/baseurl'
 import Modal from 'react-responsive-modal'
 import 'react-responsive-modal/styles.css'
 
-import Modals from 'react-modal'
+// import Modals from 'react-modal'
 
 // import vedioTest from "../../assets/vedio/sample.mp4";
 
@@ -48,7 +48,7 @@ const ZoomableMedia = ({ media, type, width, height }) => {
     <div>
       {type === 'image' ? (
         <Image
-          src={`${BACKEND_BASE_URL}${media}`}
+          src={`${media}`}
           alt="Zoomable Image"
           width={130}
           height={130}
@@ -112,12 +112,12 @@ const UserIDWiseData = () => {
   const [userProfessionalDetails, setUserProfessionalDetails] = useState<any>([])
   const [userYourself, setUserYourself] = useState<any>([])
   const [userLookingfor, setUserLookingfor] = useState<any>([])
-  const [userImage, setUserImage] = useState<any>([])
+  // const [userImage, setUserImage] = useState<any>([])
   const [userBio, setUserBio] = useState<any>([])
   const [userFile, setUserFile] = useState<any>([])
-  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_1?.slice(27))
-  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_2?.slice(27))
-  // console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀', userFile?.file_3?.slice(27))
+  const [userProfileImg, setUserProfileImg] = useState<any>([])
+  console.log("🚀 ~ UserIDWiseData ~ userProfileImg:", userProfileImg)
+  
 
   // const [userFiles, setUserFiles] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -136,6 +136,7 @@ const UserIDWiseData = () => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [userMedia, setUserMedia] = useState([])
 
+
   const images = [
     pairme,
     pairme,
@@ -146,14 +147,14 @@ const UserIDWiseData = () => {
     // Add more images as needed
   ]
 
-  const onImageClick = (index) => {
-    setSelectedImage(userImage[index])
-    setOpen(true)
-  }
+  // const onImageClick = (index) => {
+  //   setSelectedImage(userImage[index])
+  //   setOpen(true)
+  // }
 
-  const onCloseModal = () => {
-    setOpen(false)
-  }
+  // const onCloseModal = () => {
+  //   setOpen(false)
+  // }
 
   const perPage = 5
 
@@ -183,7 +184,7 @@ const UserIDWiseData = () => {
   
     try {
       // Check if the user ID belongs to a deleted user
-      const res = await axiosInstanceAuth.get(`/admin/getDeleteUserProfile/${id}`);
+      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/getDeleteUserProfile/${id}`);
       const myData = res.data.profile;
       console.log('User Data:--->', myData);
 
@@ -191,16 +192,16 @@ const UserIDWiseData = () => {
   
       if (isDeleted) {
         // Fetch deleted user data
-        const res = await axiosInstanceAuth.get(`/admin/getDeleteUserProfile/${id}`);
-        const myData = res?.data;
-        console.log('Deleted User Data-->:', myData);
+        const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/getDeleteUserProfile/${id}`);
+        const myData = res.data;
+        console.log("🚀 ~ getUserdata ~ myData-=--=>>>:", myData)
         setUserData(myData?.profile || []);
         setUserAddress(myData?.profile?.address || []);
         setUserBusinessAddress(myData?.profile?.businessaddress || []);
         setUserProfessionalDetails(myData?.profile?.professionalDetails || []);
         setUserYourself(myData?.profile?.yourself || []);
         setUserLookingfor(myData?.profile?.lookingfor || []);
-        setUserImage([
+        setUserProfileImg([
           myData.profileData.image.photo_1 || '',
           myData.profileData.image.photo_2 || '',
           myData.profileData.image.photo_3 || '',
@@ -224,16 +225,16 @@ const UserIDWiseData = () => {
         });
       } else {
         // Fetch active user data
-        const res = await axiosInstanceAuth.get(`/admin/findUserData/${id}`);
+        const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/findUserData/${id}`);
         const myData = res?.data;
-        console.log('Active User Data:--->', myData);
         setUserData(myData?.data || []);
+        // setUserProfileImg(myData?.profileData?.image || [] );
         setUserAddress(myData?.data?.address || []);
         setUserBusinessAddress(myData?.data?.businessaddress || []);
         setUserProfessionalDetails(myData?.data?.professionalDetails || []);
         setUserYourself(myData?.data?.yourself || []);
         setUserLookingfor(myData?.data?.lookingfor || []);
-        setUserImage([
+        setUserProfileImg([
           myData.profileData.image.photo_1 || '',
           myData.profileData.image.photo_2 || '',
           myData.profileData.image.photo_3 || '',
@@ -266,6 +267,8 @@ const UserIDWiseData = () => {
       getUserdata();
     }
   }, [router.query.id]);
+
+
 
   return (
     <>
@@ -328,7 +331,8 @@ const UserIDWiseData = () => {
                 className="rounded-lg"
               /> */}
               <Image
-        src={`${BACKEND_BASE_URL}${userData?.profileImage}`}
+        // src={`${BACKEND_BASE_URL}${userData?.profileImage}`}
+        src={`${process.env.NEXT_PUBLIC_BASE_URL}${userData?.profileImage}`}
         alt="user profile"
         width={220}
         height={220}
@@ -424,26 +428,29 @@ const UserIDWiseData = () => {
             Profile
           </div>
           <div className="flex gap-10 w-[500%] ">
-            {userMedia.map((media, index) => (
-              <ZoomableMedia
-                key={index}
-                media={media}
-                type={
-                  media.includes('.jpg') ||
-                  media.includes('.png') ||
-                  media.includes('.webp') ||
-                  media.includes('.jpeg')
-                    ? 'image'
-                    : media.includes('.mp4')
-                    ? 'video'
-                    : media.includes('.gif')
-                    ? 'gif'
-                    : 'unknown'
-                }
-                width={130} // Set your desired width for images and videos
-                height={130} //
-              />
-            ))}
+            {userProfileImg.map((media, index) => {
+              console.log("🚀 ~ {userProfileImg.map ~ media:", media)
+              return (
+                <ZoomableMedia
+                  key={index}
+                  media={`http://18.134.143.170/${media}`}
+                  type={
+                    media.includes('.jpg') ||
+                    media.includes('.png') ||
+                    media.includes('.webp') ||
+                    media.includes('.jpeg')
+                      ? 'image'
+                      : media.includes('.mp4')
+                      ? 'video'
+                      : media.includes('.gif')
+                      ? 'gif'
+                      : 'unknown'
+                  }
+                  width={130} // Set your desired width for images and videos
+                  height={130} //
+                />
+              )
+            })}
           </div>
         </div>
       </div>

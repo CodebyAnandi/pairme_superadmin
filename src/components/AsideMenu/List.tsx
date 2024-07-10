@@ -18,7 +18,7 @@ export default function AsideMenuList({ menu, isDropdownList = false, className 
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:3334/api/admin/loggedUserInfo', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/admin/loggedUserInfo`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

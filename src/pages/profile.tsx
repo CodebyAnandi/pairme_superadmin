@@ -91,7 +91,7 @@ const ProfilePage = () => {
       console.log(token)
 
       const response = await axios.post(
-        'http://localhost:3334/api/admin/changeAdminNameEmail',
+        `${process.env.NEXT_PUBLIC_BASE_URL}api/admin/changeAdminNameEmail`,
         {
           name: values.name,
           email: values.email,

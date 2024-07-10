@@ -45,7 +45,7 @@ export default function Error() {
 
   const handleSubmit = async () => {
     await axiosInstance
-      .post('admin/login', mydata)
+      .post(`${process.env.NEXT_PUBLIC_BASE_URL}admin/login`, mydata)
       .then((res) => {
         const myData = res?.data
         console.log('=========myData', myData)

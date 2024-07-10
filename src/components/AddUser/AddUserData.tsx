@@ -289,8 +289,10 @@ const TableAddUser = ({ searchUser = '' }) => {
 
   const getAdmindata = async () => {
     try {
-      const res = await axiosInstanceAuth.get('admin/user_data');
+      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/user_data`);
+      // const res = await axiosInstanceAuth.get('admin/user_data');
       const myData = res?.data;
+      console.log("==-=-=-=-=>",)
       setAllUser(myData?.data || []);
     } catch (err) {
       console.log('Error fetching admin data:', err);
@@ -299,7 +301,7 @@ const TableAddUser = ({ searchUser = '' }) => {
 
   const getDeletedUsers = async () => {
     try {
-      const res = await axiosInstanceAuth.get('admin/allDeletedUser');
+      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/allDeletedUser`);
       const myData = res?.data;
       setDeletedUsers(myData?.data || []);
     } catch (err) {
@@ -346,7 +348,7 @@ const TableAddUser = ({ searchUser = '' }) => {
   const handleDeleteUser = async (_id) => {
     try {
       console.log(_id);
-      await axiosInstanceAuth.delete(`/admin/deleteUser/${_id}`);
+      await axiosInstanceAuth.delete(`${process.env.NEXT_PUBLIC_BASE_URL}admin/deleteUser/${_id}`);
       setAllUser((prevUsers) => prevUsers.filter((user) => user._id !== _id));
       const updatedReportData = ReportedData.filter((user) => user.uId !== _id);
       setFilterReportData(updatedReportData); // Update filtered report data
@@ -370,7 +372,7 @@ const TableAddUser = ({ searchUser = '' }) => {
 
   return (
     <>
-      <CardBoxModal
+      {/* <CardBoxModal
         title="Add User"
         buttonColor="danger"
         buttonLabel="Confirm"
@@ -382,7 +384,7 @@ const TableAddUser = ({ searchUser = '' }) => {
           Lorem ipsum dolor sit amet <b>adipiscing elit</b>
         </p>
         <p>This is a sample modal for adding user.</p>
-      </CardBoxModal>
+      </CardBoxModal> */}
 
       <div className="flex justify-between mb-4">
         <div>
@@ -461,13 +463,25 @@ const TableAddUser = ({ searchUser = '' }) => {
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
                     <Buttons type="justify-center " noWrap>
                       {showReportedUsers ? (
+                        data &&
+                        data.length > 0 &&
+                        data[0].permissions.delete === true ? (
                         <Button
                           color="info"
                           icon={mdiEyeOff}
                           onClick={() => handleReportIgnore(d?._id)}
                           small
                         />
-                      ) : (
+                      ): (
+                        <Button
+                          color="info"
+                          icon={mdiEyeOff}
+                          onClick={() => handleReportIgnore(d?._id)}
+                          small
+                          outline
+                          disabled
+                        />
+                      ) ): (
                         <Button
                           color="info"
                           icon={mdiEye}

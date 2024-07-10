@@ -26,7 +26,7 @@ export const fetchLoggedUserInfo = createAsyncThunk(
         }
       };
 
-      const response = await axios.get('http://localhost:3334/api/admin/loggedUserInfo', config);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}api/admin/loggedUserInfo`, config);
       return response.data;
     } catch (error) {
       console.error('Error fetching logged user info:', error);

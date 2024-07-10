@@ -46,7 +46,7 @@ const AddAdmin = ({ searchUser = '' }) => {
       update: false,
     },
   })
-  console.log('newUser', newUser)
+  // console.log('newUser', newUser)
 
   const handleAddUserChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -68,7 +68,7 @@ const AddAdmin = ({ searchUser = '' }) => {
 
   const submitForm = async () => {
     try {
-      const res = await axiosInstanceAuth.post('/admin/createSubAdmin', newUser)
+      const res = await axiosInstanceAuth.post(`${process.env.NEXT_PUBLIC_BASE_URL}admin/createSubAdmin`, newUser)
       console.log('SubAdmin created successfully', res.data)
       // Optionally, you can refresh the list of sub-admins after successful creation
       getAdmindata()
@@ -93,7 +93,7 @@ const AddAdmin = ({ searchUser = '' }) => {
   // Get All Admin Show
   const getAdmindata = async () => {
     try {
-      const res = await axiosInstanceAuth.get('admin/getAllSubAdmin')
+      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/getAllSubAdmin`)
       const myData = res?.data
       setAllUser(myData?.data || [])
       console.log('getAllSubAdmin---->', myData)
@@ -104,7 +104,7 @@ const AddAdmin = ({ searchUser = '' }) => {
 
   const getDeletedUsers = async () => {
     try {
-      const res = await axiosInstanceAuth.get('admin/allDeletedUser')
+      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/allDeletedUser`)
       const myData = res?.data
       setDeletedUsers(myData?.data || [])
       console.log('DeletedUsers---->', myData)
@@ -138,7 +138,7 @@ const AddAdmin = ({ searchUser = '' }) => {
   const handleDeleteUser = async (_id) => {
     try {
       console.log('Attempting to delete user with ID:', _id)
-      await axiosInstanceAuth.delete(`/admin/deleteUser/${_id}`)
+      await axiosInstanceAuth.delete(`${process.env.NEXT_PUBLIC_BASE_URL}admin/deleteUser/${_id}`)
       setAllUser((prevUsers) => prevUsers.filter((user) => user._id !== _id))
       console.log(`User with ID ${_id} deleted successfully`)
     } catch (err) {

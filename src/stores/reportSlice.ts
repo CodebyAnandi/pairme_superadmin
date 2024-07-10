@@ -22,7 +22,7 @@ export const fetchReportUser = createAsyncThunk(
         }
       };
 
-      const response = await axios.get('http://localhost:3334/api/admin/getReportUser', config);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}api/admin/getReportUser`, config);
       return response.data;
     } catch (error) {
       console.error('Error fetching report user:', error);
@@ -35,7 +35,7 @@ export const deleteReportUser = createAsyncThunk(
   'reportUser/deleteReportUser',
   async (_id) => {
     try {
-      const response = await axios.delete(`http://localhost:3334/delete/reportUser/${_id}`);
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}delete/reportUser/${_id}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting report user:', error);
