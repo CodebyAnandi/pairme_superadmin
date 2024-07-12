@@ -58,13 +58,13 @@ const ZoomableMedia = ({ media, type, width, height }) => {
       ) : type === 'video' ? (
         <div onClick={onMediaClick} style={{ cursor: 'pointer' }}>
           <video className="rounded-lg h-[85px] w-[135px]" controls>
-            <source src={`${BACKEND_BASE_URL}${media}`} type={`video/${getFileType(media)}`} />
+            <source src={`${process.env.NEXT_PUBLIC_BASE_URL}${media}`} type={`video/${getFileType(media)}`} />
             Your browser does not support the video tag.
           </video>
         </div>
       ) : type === 'gif' ? (
         <Image
-          src={`${BACKEND_BASE_URL}${media}`}
+          src={`${process.env.NEXT_PUBLIC_BASE_URL}${media}`}
           alt="Zoomable GIF"
           width={width}
           height={height}
@@ -78,14 +78,14 @@ const ZoomableMedia = ({ media, type, width, height }) => {
           <Image
             width={0}
             height={0}
-            src={`${BACKEND_BASE_URL}${selectedMedia}`}
+            src={`${process.env.NEXT_PUBLIC_BASE_URL}${selectedMedia}`}
             alt="Zoomed In Image"
             className='h-[600px] w-[850px]'
           />
         ) : type === 'video' ? (
           <video className="h-[400px] w-[850px]" controls>
             <source
-              src={`${BACKEND_BASE_URL}${selectedMedia}`}
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}${selectedMedia}`}
               type={`video/${getFileType(selectedMedia)}`}
             />
             Your browser does not support the video tag.
@@ -227,6 +227,7 @@ const UserIDWiseData = () => {
         // Fetch active user data
         const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/findUserData/${id}`);
         const myData = res?.data;
+        console.log('User Data:--->', myData);
         setUserData(myData?.data || []);
         // setUserProfileImg(myData?.profileData?.image || [] );
         setUserAddress(myData?.data?.address || []);
@@ -433,12 +434,13 @@ const UserIDWiseData = () => {
               return (
                 <ZoomableMedia
                   key={index}
-                  media={`http://18.134.143.170/${media}`}
+                  media={`${process.env.NEXT_PUBLIC_BASE_URL}${media}`}
                   type={
                     media.includes('.jpg') ||
                     media.includes('.png') ||
                     media.includes('.webp') ||
-                    media.includes('.jpeg')
+                    media.includes('.jpeg') ||
+                    media.includes('.gif') 
                       ? 'image'
                       : media.includes('.mp4')
                       ? 'video'
@@ -567,7 +569,7 @@ const UserIDWiseData = () => {
               <div className="modal">
                 <iframe
                   title="PDF Viewer"
-                  src={`${BACKEND_BASE_URL}${currentFile}`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_URL}${currentFile}`}
                   width="100%"
                   height="800px"
                   frameBorder="0"
@@ -695,7 +697,7 @@ const UserIDWiseData = () => {
                 </tr>
                 <tr>
                   <td className="font-bold">Start Date</td>
-                  <td>{userBusinessAddress.startdate}</td>
+                  <td>{userBusinessAddress.start_date}</td>
                 </tr>
               </>
             </tbody>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { mdiEye, mdiTrashCan } from '@mdi/js'
 import { useRouter } from 'next/router'
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllSubAdmin } from '../../stores/adminSlice';
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
@@ -16,17 +17,29 @@ const AddAdmin = ({ searchUser = '' }) => {
 
   const [allUser, setAllUser] = useState([])
   console.log('🚀 ~ TableAddUser ~ allUser:', allUser)
-  const [deletedUsers, setDeletedUsers] = useState([])
+  const [subAdmin, setSubAdmin] = useState([])
+  // const [deletedUsers, setDeletedUsers] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isModalAddUserActive, setIsModalAddUserActive] = useState(false)
   const [showDeleteUsers, setShowDeleteUsers] = useState(false)
+  const dispatch = useDispatch();
+  const allSubAdmin = useSelector((state)=> state.loggedUser.allSubAdmin);
+  console.log("-=-=mm>.", subAdmin);
 
-  const clientsPaginated = (showDeleteUsers ? deletedUsers : allUser)?.slice(
+  useEffect(() => {
+    setSubAdmin(allSubAdmin?.data || []);
+  }, [subAdmin]);
+
+  useEffect(() => {
+    dispatch(getAllSubAdmin())
+  }, [dispatch]);
+
+  const clientsPaginated = (showDeleteUsers ? subAdmin : allUser)?.slice(
     perPage * currentPage,
     perPage * (currentPage + 1)
   )
 
-  const numPages = Math.ceil((showDeleteUsers ? deletedUsers : allUser).length / perPage)
+  const numPages = Math.ceil((showDeleteUsers ? subAdmin : allUser).length / perPage)
 
   const pagesList = Array.from({ length: numPages }, (_, index) => index)
 
@@ -102,16 +115,16 @@ const AddAdmin = ({ searchUser = '' }) => {
     }
   }
 
-  const getDeletedUsers = async () => {
-    try {
-      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/allDeletedUser`)
-      const myData = res?.data
-      setDeletedUsers(myData?.data || [])
-      console.log('DeletedUsers---->', myData)
-    } catch (err) {
-      console.log('err --->', err)
-    }
-  }
+  // const getDeletedUsers = async () => {
+  //   try {
+  //     const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/allDeletedUser`)
+  //     const myData = res?.data
+  //     setDeletedUsers(myData?.data || [])
+  //     console.log('DeletedUsers---->', myData)
+  //   } catch (err) {
+  //     console.log('err --->', err)
+  //   }
+  // }
 
   useEffect(() => {
     console.log('🚀 ~ AddAdmin ~ newUser:', newUser)
@@ -130,7 +143,7 @@ const AddAdmin = ({ searchUser = '' }) => {
   }
 
   const handleShowDeleteUsers = () => {
-    getDeletedUsers()
+    // getDeletedUsers()
     setCurrentPage(0)
     setShowDeleteUsers(true) // Show delete users
   }

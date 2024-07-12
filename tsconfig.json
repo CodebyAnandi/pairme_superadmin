@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/stores/adminSlice.ts"  ],
   "exclude": [
     "node_modules"
   ]

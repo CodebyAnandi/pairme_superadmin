@@ -3,43 +3,57 @@ import {
   mdiCartOutline,
   mdiChartPie,
   mdiChartTimelineVariant,
-  mdiGithub,
-  mdiMonitorCellphone,
   mdiReload,
-} from '@mdi/js'
-import Head from 'next/head'
-import React, { useState } from 'react'
-import type { ReactElement } from 'react'
-import Button from '../components/Button'
-import LayoutAuthenticated from '../layouts/Authenticated'
-import SectionMain from '../components/Section/Main'
-import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton'
-import CardBoxWidget from '../components/CardBox/Widget'
-import { useSampleClients, useSampleTransactions } from '../hooks/sampleData'
-import CardBoxTransaction from '../components/CardBox/Transaction'
-import { Client, Transaction } from '../interfaces'
-import CardBoxClient from '../components/CardBox/Client'
-import SectionBannerStarOnGitHub from '../components/Section/Banner/StarOnGitHub'
-import CardBox from '../components/CardBox'
-import { sampleChartData } from '../components/ChartLineSample/config'
-import ChartLineSample from '../components/ChartLineSample'
-import NotificationBar from '../components/NotificationBar'
-import TableSampleClients from '../components/Table/SampleClients'
-import { getPageTitle } from '../config'
+} from '@mdi/js';
+import Head from 'next/head';
+import React, { useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
+import Button from '../components/Button';
+import LayoutAuthenticated from '../layouts/Authenticated';
+import SectionMain from '../components/Section/Main';
+import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton';
+import CardBoxWidget from '../components/CardBox/Widget';
+import { useSampleClients, useSampleTransactions } from '../hooks/sampleData';
+import CardBoxTransaction from '../components/CardBox/Transaction';
+import { Client, Transaction } from '../interfaces';
+import CardBoxClient from '../components/CardBox/Client';
+import CardBox from '../components/CardBox';
+import { sampleChartData } from '../components/ChartLineSample/config';
+import ChartLineSample from '../components/ChartLineSample';
+import TableSampleClients from '../components/Table/SampleClients';
+import { getPageTitle } from '../config';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllUsers, getAllDeletedUsers , getAllSubAdmin } from '../stores/adminSlice';
 
 const Dashboard = () => {
-  const { clients } = useSampleClients()
-  const { transactions } = useSampleTransactions()
+  const { clients } = useSampleClients();
+  const { transactions } = useSampleTransactions();
+  const dispatch = useDispatch();
 
-  const clientsListed = clients.slice(0, 4)
+  useEffect(() => {
+    dispatch(getAllUsers());
+    dispatch(getAllDeletedUsers());
+    dispatch(getAllSubAdmin())
+  },[]);
 
-  const [chartData, setChartData] = useState(sampleChartData())
+  const alldata = useSelector((state) => state?.loggedUser?.allUsers);
+  const allDeletedUser = useSelector((state) => state?.loggedUser?.deletedUsers);
+  const allSubAdmin = useSelector((state)=> state.loggedUser.allSubAdmin);
+  console.log("////", allDeletedUser);
+
+  const Client = alldata && alldata?.size;
+  const allDeletedUserdata = allDeletedUser && allDeletedUser?.size;
+  const allSubAdminData = allSubAdmin && allSubAdmin.size;
+  // console.log(allSubAdminData);
+
+  const clientsListed = clients.slice(0, 4);
+
+  const [chartData, setChartData] = useState(sampleChartData());
 
   const fillChartData = (e: React.MouseEvent) => {
-    e.preventDefault()
-
-    setChartData(sampleChartData())
-  }
+    e.preventDefault();
+    setChartData(sampleChartData());
+  };
 
   return (
     <>
@@ -60,8 +74,8 @@ const Dashboard = () => {
             trendColor="success"
             icon={mdiAccountMultiple}
             iconColor="success"
-            number={512}
-            label="Clients"
+            number={Client}
+            label="User"
           />
           <CardBoxWidget
             trendLabel="16%"
@@ -69,9 +83,9 @@ const Dashboard = () => {
             trendColor="danger"
             icon={mdiCartOutline}
             iconColor="info"
-            number={7770}
-            numberPrefix="$"
-            label="Sales"
+            number={allDeletedUserdata}
+            numberPrefix=""
+            label="Deleted User"
           />
           <CardBoxWidget
             trendLabel="Overflow"
@@ -79,9 +93,9 @@ const Dashboard = () => {
             trendColor="warning"
             icon={mdiChartTimelineVariant}
             iconColor="danger"
-            number={256}
-            numberSuffix="%"
-            label="Performance"
+            number={allSubAdminData}
+            numberSuffix=""
+            label="Sub Admin"
           />
         </div>
 
@@ -98,10 +112,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* <div className="my-6">
-          <SectionBannerStarOnGitHub />
-        </div> */}
-
         <SectionTitleLineWithButton icon={mdiChartPie} title="Trends overview">
           <Button icon={mdiReload} color="whiteDark" onClick={fillChartData} />
         </SectionTitleLineWithButton>
@@ -115,11 +125,11 @@ const Dashboard = () => {
         </CardBox>
       </SectionMain>
     </>
-  )
-}
+  );
+};
 
 Dashboard.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
-}
+  return <LayoutAuthenticated>{page}</LayoutAuthenticated>;
+};
 
-export default Dashboard
+export default Dashboard;
