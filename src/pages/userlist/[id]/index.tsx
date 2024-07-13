@@ -1,10 +1,9 @@
-
 'use client'
 
-import { mdiAccount, mdiArrowLeft } from '@mdi/js'
+import { mdiAccount, mdiArrowLeft, mdiPencil } from '@mdi/js'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { ReactElement, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import CardBox from '../../../components/CardBox'
 import LayoutAuthenticated from '../../../layouts/Authenticated'
 import SectionMain from '../../../components/Section/Main'
@@ -12,63 +11,69 @@ import SectionTitleLineWithButton from '../../../components/Section/TitleLineWit
 import TableUserList from "../../../components/AddUser/AddUserData"
 import UserIDWiseData from '../../../components/UserList/UserIDWiseData'
 import { getPageTitle } from '../../../config'
-
 import Button from '../../../components/Button'
 import Buttons from '../../../components/Buttons'
-
-// import axiosInstanceAuth from '../../../apiInstances/axiosInstanceAuth'
-// import axiosInstance from '../../../apiInstances/axiosInstance'
-// import axios from 'axios'
+import EditUserForm from '../../../components/EditUserForm/EditUserForm' // Corrected import path
+import Modal from 'react-responsive-modal'
+import 'react-responsive-modal/styles.css' // Import the modal component if not already imported
+import axiosInstanceAuth from '../../../apiInstances/axiosInstanceAuth'
 
 const UserList = () => {
   const router = useRouter()
+  const { id } = router.query
+  console.log('Fetching user data for ID:00000++>', id)
 
-  const [userConnectionLength, setUserConnectionLength] = useState([])
-  console.log('🚀 ~ UserList ~ userLength:', userConnectionLength)
-  // const getUserdata = async () => {
-  //   const { id } = router.query;
-  //   console.log("Fetching user data for ID:", id);
-  
-  //   if (!id) {
-  //     console.error('No user ID found in router query.');
-  //     return;
-  //   }
-  
-  //   try {
-  //     // Check if the user ID belongs to a deleted user
-  //     const isDeletedUser = await axiosInstance.head(`http://localhost:3334/admin/getDeleteUserProfile/${id}`);
-  //     console.log("Head request response:", isDeletedUser);
-  
-  //     if (isDeletedUser.status === 200) {
-  //       // Fetch deleted user data
-  //       const res = await axios({
-  //         url: `http://localhost:3334/admin/getDeleteUserProfile/${id}`,
-  //         method: "get"
-  //       });
-  //       const myData = res?.data;
-  //       console.log('Deleted User Data:', myData);
-  //       setUserConnectionLength(myData?.data?.connectedUser?.length || 0);
-  //     } else {
-  //       // Fetch active user data
-  //       const res = await axiosInstanceAuth.get(`http://localhost:3334/admin/findUserData/${id}`);
-  //       const myData = res?.data;
-  //       console.log('Active User Data:', myData);
-  //       setUserConnectionLength(myData?.data?.connectedUser?.length || 0);
-  //     }
-  //   } catch (err) {
-  //     console.error('Error fetching user data:', err.response || err.message || err);
-  //   }
-  // };
-  
-  
-  // // CompanyListData
+  const [isEditing, setIsEditing] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
 
-  // useEffect(() => {
-  //   getUserdata()
-  // }, [])
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (id) {
+        try {
+          // Fetch user data based on ID
+          const res = await axiosInstanceAuth.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}admin/getDeleteUserProfile/${id}`
+          )
+          const userData = res.data 
+          console.log("---->>>1111",userData)
+          if(!userData){
+            try {
+              // Fetch user data based on ID
+              const res = await axiosInstanceAuth.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}admin/findUserData/${id}`
+              )
+              const userData = res.data 
+              console.log("---->>>2222",userData)
+              setCurrentUser(userData?.data) // Set current user data
+            } catch (err) {
+              console.error('Error fetching user data:', err.response || err.message || err)
+            }
+          }
+          console.log("---->>>1111",userData)
+          setCurrentUser(userData) // Set current user data
+        } catch (err) {
+          console.error('Error fetching user data:', err.response || err.message || err)
+        }
+      }
+    }
+
+    fetchUserData()
+  }, [id])
+
+
 
   const handleBackAction = () => {
     router.push(`/adduser`)
+  }
+
+  const handleSave = (updatedUser) => {
+    // Handle save logic here (e.g., update user data via API)
+    console.log('Updated User Data:', updatedUser)
+    setIsEditing(false) // Close modal after saving
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false) // Close modal on cancel
   }
 
   return (
@@ -78,13 +83,14 @@ const UserList = () => {
       </Head>
 
       <SectionMain>
-        <SectionTitleLineWithButton icon={mdiAccount} title="User List" main>
-          {/* <div className="text-3xl ml-5">{userLength}</div> */}
-          <div className="flex justify-end ">
-            <div className="text-2xl">Connection</div>
-            <div className="rounded-full h-8 w-8 flex items-center justify-center bg-[#FFFFFF] font-bold text-xl ml-2 p-5">
-              {userConnectionLength}
-            </div>
+        <SectionTitleLineWithButton icon={mdiAccount} title="User Details" main>
+          <div className="flex justify-end items-center">
+            <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
+              icon={mdiPencil}
+              onClick={() => setIsEditing(true)} // Directly open edit modal
+            >
+              <span className="ml-2">Edit</span>
+            </Button>
           </div>
         </SectionTitleLineWithButton>
 
@@ -98,18 +104,20 @@ const UserList = () => {
           <UserIDWiseData />
         </CardBox>
 
-       <CardBox className="mb-6" hasTable>
-          <TableUserList/>
-        </CardBox> 
+        <CardBox className="mb-6" hasTable>
+          <TableUserList />
+        </CardBox>
+
+        <Modal open={isEditing} onClose={handleCancel} center>
+          <EditUserForm user={currentUser} onSave={handleSave} onCancel={handleCancel} />
+        </Modal>
       </SectionMain>
     </>
   )
 }
 
-UserList.getLayout = function getLayout(page: ReactElement) {
+UserList.getLayout = function getLayout(page) {
   return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 
 export default UserList
-
- 

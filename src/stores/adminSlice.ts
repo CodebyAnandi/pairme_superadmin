@@ -6,7 +6,7 @@ const initialState = {
   userInfo: null,
   allUsers: null,
   deletedUsers: null,
-  allSubAdmin: null, // Correct state for all sub admins
+  allSubAdmin: null,
   loading: false,
   error: null,
 };
@@ -23,7 +23,7 @@ export const fetchLoggedUserInfo = createAsyncThunk(
 
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,  // Assuming Bearer token authentication
+          Authorization: `Bearer ${token}`,
         },
       };
 
@@ -64,6 +64,7 @@ export const getAllDeletedUsers = createAsyncThunk(
   }
 );
 
+// Define the async thunk to fetch all sub admins
 export const getAllSubAdmin = createAsyncThunk(
   'loggedUser/getAllSubAdmin',
   async () => {
@@ -77,6 +78,20 @@ export const getAllSubAdmin = createAsyncThunk(
   }
 );
 
+// Define the async thunk to update user data
+export const updateUserData = createAsyncThunk(
+  'loggedUser/updateUserData',
+  async ({ id, userData }) => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateUserData/${id}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user data:', error);
+      throw error;
+    }
+  }
+);
+
 // Create the slice using createSlice
 const loggedUserSlice = createSlice({
   name: 'loggedUser',
@@ -84,9 +99,10 @@ const loggedUserSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch logged user info reducers
       .addCase(fetchLoggedUserInfo.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear error state on pending
+        state.error = null;
       })
       .addCase(fetchLoggedUserInfo.fulfilled, (state, action) => {
         state.loading = false;
@@ -97,9 +113,11 @@ const loggedUserSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch logged user info.';
       })
+
+      // Fetch all users reducers
       .addCase(getAllUsers.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear error state on pending
+        state.error = null;
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.loading = false;
@@ -110,9 +128,11 @@ const loggedUserSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch all users.';
       })
+
+      // Fetch all deleted users reducers
       .addCase(getAllDeletedUsers.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear error state on pending
+        state.error = null;
       })
       .addCase(getAllDeletedUsers.fulfilled, (state, action) => {
         state.loading = false;
@@ -123,18 +143,36 @@ const loggedUserSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch all deleted users.';
       })
+
+      // Fetch all sub admins reducers
       .addCase(getAllSubAdmin.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear error state on pending
+        state.error = null;
       })
       .addCase(getAllSubAdmin.fulfilled, (state, action) => {
         state.loading = false;
-        state.allSubAdmin = action.payload; // Update allSubAdmin state with fetched data
+        state.allSubAdmin = action.payload;
         state.error = null;
       })
       .addCase(getAllSubAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch all sub admins.';
+      })
+
+      // Update user data reducers
+      .addCase(updateUserData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserData.fulfilled, (state, action) => {
+        state.loading = false;
+        // Handle the updated user data as needed
+        state.userInfo = action.payload; // Example: Update logged in user info after update
+        state.error = null;
+      })
+      .addCase(updateUserData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update user data.';
       });
   },
 });
@@ -144,4 +182,5 @@ export const selectUserInfo = (state) => state.loggedUser.userInfo;
 export const selectAllUsers = (state) => state.loggedUser.allUsers;
 export const selectDeletedUsers = (state) => state.loggedUser.deletedUsers;
 export const selectAllSubAdmin = (state) => state.loggedUser.allSubAdmin;
+
 export default loggedUserSlice.reducer;

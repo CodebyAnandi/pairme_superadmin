@@ -588,8 +588,6 @@ const TableAddUser = ({ searchUser = '' }) => {
                             icon={mdiTrashCan}
                             onClick={() => handleDeleteUser(d?.uId)}
                             small
-                            outline
-                            disabled
                           />
                         ) : (
                           <Button
