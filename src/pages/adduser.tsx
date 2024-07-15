@@ -4,8 +4,6 @@ import {
   mdiLock,
   mdiPhone,
   mdiAccountTie,
-  mdiDelete,
-  mdiAllInclusive,
 } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useState } from 'react'
@@ -83,39 +81,8 @@ const AddUser = () => {
           </div>
         </SectionTitleLineWithButton>
 
-        {/* <div onClick={() => setIsModalInfoActive(true)}>
-          <Buttons className="flex justify-end mb-3">
-            <Button type="submit" color="info" label="Add" icon={mdiPlus} className="rounded-lg" />
-          </Buttons>
-        </div> */}
-
-        {/* <div className="flex gap-3">
-          <div>
-            <Buttons className="flex justify-end mb-3">
-              <Button
-                type="submit"
-                color="info"
-                label="All"
-                icon={mdiAllInclusive}
-                className="rounded-lg"
-              />
-            </Buttons>
-          </div>
-
-          <div>
-            <Buttons className="flex justify-end mb-3">
-              <Button
-                type="submit"
-                color="danger"
-                label="Deleted"
-                icon={mdiDelete}
-                className="rounded-lg"
-              />
-            </Buttons>
-          </div>
-        </div> */}
         <CardBox className="mb-6" hasTable>
-          <TableAddUser searchUser={searchUser} />
+          <TableAddUser searchUser={searchUser} />  
         </CardBox>
       </SectionMain>
     </>

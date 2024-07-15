@@ -46,6 +46,14 @@ const AddAdmin = ({ searchUser = '' }) => {
   // const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   // const [isModalTrashActive, setIsModalTrashActive] = useState(false)
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
   const [newUser, setNewUser] = useState({
     name: '',
     lastname: '',
@@ -60,6 +68,7 @@ const AddAdmin = ({ searchUser = '' }) => {
     },
   })
   // console.log('newUser', newUser)
+
 
   const handleAddUserChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -201,15 +210,16 @@ const AddAdmin = ({ searchUser = '' }) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-            <input
-              type="date"
-              name="dateOfBirth"
-              value={newUser.dateOfBirth}
-              onChange={handleAddUserChange}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            />
-          </div>
+      <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+      <input
+        type="date"
+        name="dateOfBirth"
+        value={newUser.dateOfBirth}
+        onChange={handleAddUserChange}
+        max={getTodayDate()}
+        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+      />
+    </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input

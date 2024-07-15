@@ -3,6 +3,7 @@ import { UserPayloadObject } from '../interfaces'
 
 interface MainState {
   userName: string
+  role: null | string
   userEmail: null | string
   userAvatar: null | string
   isFieldFocusRegistered: boolean
@@ -11,6 +12,7 @@ interface MainState {
 const initialState: MainState = {
   /* User */
   userName: '',
+  role: '',
   userEmail: "",
   userAvatar: "",
 
@@ -24,6 +26,7 @@ export const mainSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<UserPayloadObject>) => {
       state.userName = action.payload.name
+      state.role = action.payload.role
       state.userEmail = action.payload.email
       state.userAvatar = action.payload.avatar
     },

@@ -270,7 +270,7 @@ const UserIDWiseData = () => {
     }
   }
   
-  const [permissions, setPermissions] = useState([])
+  // const [permissions, setPermissions] = useState([])
   // console.log('0-0-0-0->>.', permissions)
 
   console.log('-=-=--=-=-=-=-=>>>>', userProfessionalDetails)
@@ -281,64 +281,45 @@ const UserIDWiseData = () => {
     }
   }, [router.query.id])
 
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target
-    setPermissions({ ...permissions, [name]: checked })
-  }
 
-  const handleSave = () => {
-    // Save the updated permissions here
-    setIsModalOpen(false)
-  }
+    const [formData, setFormData] = useState({
+      permissions: {
+        delete: userData?.permissions?.delete || false,
+        update: userData?.permissions?.update || false,
+        report: userData?.permissions?.report || false,
+      },
+    });
+  
+    const handleCheckboxChange = (event) => {
+      const { name, checked } = event.target;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        permissions: {
+          ...prevFormData.permissions,
+          [name]: checked,
+        },
+      }));
+    };
+  
+    const handleSave = async () => {
+      try {
+        const updatedPermissions = {
+          permissions: formData.permissions,
+        };
+        const userId = userData._id; // Assuming userData contains the user's _id
+  
+        await axiosInstanceAuth.put(`/api/updateUserPermission/${userId}`, updatedPermissions);
+  
+        setIsModalOpen(false); // Close modal after successful update
+      } catch (error) {
+        console.error('Error updating user permissions:', error.response || error.message || error);
+        // Handle error state or show error message to the user
+      }
+    };
+  
 
   return (
     <>
-      {/* <div className="flex gap-10">
-        {images.map((image, index) => (
-          <Image
-            key={index}
-            src={image}
-            alt="companylogo"
-            width={100}
-            height={100}
-            className="rounded-lg"
-            onClick={() => onImageClick(index)}
-          />
-        ))}
-
-        <Modal open={open} onClose={onCloseModal} center>
-          <Image src={selectedImage} alt="Zoomed In Image" />
-        </Modal>
-      </div> */}
-      {/* <div className="rounded-lg p-5 shadow-lg mt-5">
-        <div>
-          <div className="text-xl font-bold mb-2 flex gap-2 items-center">
-            <FaCircleUser />
-            Profile
-          </div>
-          <div className="flex gap-10 w-[500%] ">
-            {userMedia.map((media, index) => (
-              <ZoomableMedia
-                key={index}
-                media={media}
-                type={
-                  media.includes('.jpg') || media.includes('.png') || media.includes('.webp')
-                    ? 'image'
-                    : media.includes('.mp4')
-                    ? 'video'
-                    : media.includes('.gif')
-                    ? 'gif'
-                    : 'unknown'
-                }
-                width={130} // Set your desired width for images and videos
-                height={130} //
-              />
-            ))}
-          </div>
-        </div>
-      </div> */}
-      {/* ==================================  */}
-
       <div>
         <div className="rounded-lg p-5 shadow-lg">
           <div className="flex gap-8">
@@ -408,39 +389,6 @@ const UserIDWiseData = () => {
         {/* )} */}
       </div>
 
-      {/* Profile code  */}
-      {/* <div className="rounded-lg p-5 shadow-lg mt-5">
-        <div>
-          <div className="text-xl font-bold mb-2 flex gap-2 items-center">
-            <FaCircleUser />
-            Profile
-          </div>
-          <div className="flex gap-10">
-            {userImage.map((image, index) =>
-              image ? (
-                <Image
-                  key={index}
-                  src={`${BACKEND_BASE_URL}${image}`}
-                  alt={`profile-${index}`}
-                  width={100} // Set the width property
-                  height={100} // Set the height property
-                  className="rounded-lg"
-                  onClick={() => onImageClick(index)}
-                />
-              ) : null
-            )}
-
-            <Modal open={open} onClose={onCloseModal} center>
-              <Image
-                src={`${BACKEND_BASE_URL}${selectedImage}`}
-                alt="Zoomed In Image"
-                width={600}
-                height={600}
-              />
-            </Modal>
-          </div>
-        </div>
-      </div> */}
     {userProfileImg && userProfileImg.length > 0 ? (<div className="rounded-lg p-5 shadow-lg mt-5">
         <div>
           <div className="text-xl font-bold mb-2 flex gap-2 items-center">
@@ -596,59 +544,6 @@ const UserIDWiseData = () => {
         </div>
       ) : null}
 
-      {/* <div className="rounded-lg p-5 shadow-lg mt-5">
-        <div>
-          <div className="text-xl font-bold mb-2 flex gap-2 items-center">
-            <LuFiles /> File
-          </div>
-
-          <table className="shadow-xl rounded-lg">
-            <tbody>
-              {Object.keys(userFile).map((fileKey) => (
-                <tr key={fileKey}>
-                  <td data-label="FullName" className="">
-                    {userFile[fileKey]?.slice(27)?.split('.')[0]}
-                  </td>
-
-                  <td>
-                    <button
-                      onClick={() => openModal(fileKey)}
-                      className="bg-blue-500 text-white rounded px-3 py-2 flex items-center gap-2"
-                    >
-                      <FaFileLines />
-                      {`Open`}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {isModalOpen && (
-            <div className="modal-overlay mt-5">
-              <div className="flex justify-end mb-2">
-                <button
-                  className="bg-gray-200 text-black rounded px-3 py-2 flex items-end gap-2"
-                  onClick={closeModal}
-                >
-                  <IoMdClose className="text-black" size={22} />
-                </button>
-              </div>
-
-              <div className="modal">
-                <iframe
-                  title="PDF Viewer"
-                  src={`${BACKEND_BASE_URL}${currentFile}`}
-                  width="100%"
-                  height="800px"
-                  frameBorder="0"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </div> */}
-
       {userFile && userFile?.file_1?.length > 0 ? (
         <div className="rounded-lg p-5 shadow-lg mt-5">
           <div>
@@ -715,29 +610,6 @@ const UserIDWiseData = () => {
               Address
             </div>
 
-            {/* <table className="shadow-xl rounded-lg">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap">Address</th>
-                <th className="whitespace-nowrap">Country</th>
-                <th className="whitespace-nowrap">State</th>
-                <th className="whitespace-nowrap">City</th>
-                <th className="whitespace-nowrap">Zip Code</th>
-              </tr>
-            </thead>
-            <tbody>
-              <>
-                <tr>
-                  <td data-label="Address">{userAddress?.address}</td>
-                  <td data-label="Country">{userAddress?.country}</td>
-                  <td data-label="State">{userAddress?.state}</td>
-                  <td data-label="City">{userAddress?.city}</td>
-                  <td data-label="ZipCode">{userAddress?.zipCode}</td>
-                </tr>
-              </>
-            </tbody>
-          </table> */}
-
             <table className="shadow-xl rounded-lg">
               <tbody>
                 <>
@@ -775,31 +647,6 @@ const UserIDWiseData = () => {
               <PiBuildingsBold />
               Business Address
             </div>
-
-            {/* <table className="shadow-xl rounded-lg">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap">Address</th>
-                <th className="whitespace-nowrap">Country</th>
-                <th className="whitespace-nowrap">State</th>
-                <th className="whitespace-nowrap">City</th>
-                <th className="whitespace-nowrap">Zip Code</th>
-                <th className="whitespace-nowrap">Start Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <>
-                <tr>
-                  <td data-label="Address">{userBusinessAddress.address}</td>
-                  <td data-label="Country">{userBusinessAddress.country}</td>
-                  <td data-label="State">{userBusinessAddress.state}</td>
-                  <td data-label="City">{userBusinessAddress.city}</td>
-                  <td data-label="ZipCode">{userBusinessAddress.zipCode}</td>
-                  <td data-label="startdate">{userBusinessAddress.startdate}</td>
-                </tr>
-              </>
-            </tbody>
-          </table> */}
 
             <table className="shadow-xl rounded-lg">
               <tbody>
@@ -842,37 +689,6 @@ const UserIDWiseData = () => {
               <FaUserTie />
               Professional Details
             </div>
-
-            {/* <table className="shadow-xl rounded-lg">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap">Company Name</th>
-                <th className="whitespace-nowrap">Role</th>
-                <th className="whitespace-nowrap">Company Domain</th>
-                <th className="whitespace-nowrap">Email</th>
-                <th className="whitespace-nowrap">Category</th>
-                <th className="whitespace-nowrap">Business Experience</th>
-                <th className="whitespace-nowrap">Skills</th>
-                <th className="whitespace-nowrap">Education</th>
-              </tr>
-            </thead>
-            <tbody>
-              <>
-                <tr>
-                  <td data-label="CompanyName">{userProfessionalDetails.company_name}</td>
-                  <td data-label="Role">{userProfessionalDetails.add_role}</td>
-                  <td data-label="CompanyDomain">{userProfessionalDetails.company_domain}</td>
-                  <td data-label="Email">{userProfessionalDetails.email}</td>
-                  <td data-label="Category">{userProfessionalDetails.category}</td>
-                  <td data-label="BusinessExperience">
-                    {userProfessionalDetails.business_experience}
-                  </td>
-                  <td data-label="Skills">{userProfessionalDetails.skills}</td>
-                  <td data-label="Education">{userProfessionalDetails.education}</td>
-                </tr>
-              </>
-            </tbody>
-          </table> */}
 
             <table className="shadow-xl rounded-lg">
               <tbody>

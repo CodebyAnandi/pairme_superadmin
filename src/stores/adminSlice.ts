@@ -79,15 +79,15 @@ export const getAllSubAdmin = createAsyncThunk(
 );
 
 // Define the async thunk to update user data
-export const updateUserData = createAsyncThunk(
-  'loggedUser/updateUserData',
-  async ({ id, userData }) => {
+export const updateUserProfile = createAsyncThunk(
+  'loggedUser/updateUserProfile',
+  async ({ id, userData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateUserData/${id}`, userData);
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}api/updateUserData/${id}`, userData);
       return response.data;
     } catch (error) {
       console.error('Error updating user data:', error);
-      throw error;
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -160,17 +160,17 @@ const loggedUserSlice = createSlice({
       })
 
       // Update user data reducers
-      .addCase(updateUserData.pending, (state) => {
+      .addCase(updateUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUserData.fulfilled, (state, action) => {
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         // Handle the updated user data as needed
         state.userInfo = action.payload; // Example: Update logged in user info after update
         state.error = null;
       })
-      .addCase(updateUserData.rejected, (state, action) => {
+      .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update user data.';
       });

@@ -12,6 +12,7 @@ type Props = {
 }
 
 const CardBoxUser = ({ className , UserInfo }: Props) => { 
+console.log("🚀 ~ CardBoxUser ~ UserInfo:", UserInfo)
 
   if (!UserInfo) {
     return <div>Loading...</div>

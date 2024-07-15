@@ -38,7 +38,8 @@ export default function LayoutAuthenticated({ children }: Props) {
     if (userData) {
       dispatch(
         setUser({
-          name:userData.name + ` (${userData.role})` || "admin",
+          name:userData.name || "admin",
+          role:userData.role,
           email: userData.email || "admin@gmail.com",
           avatar: `${process.env.NEXT_PUBLIC_BASE_URL}${userData.profileImage || defaultImage}`,
           // avatar: 'https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png'

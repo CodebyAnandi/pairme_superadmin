@@ -84,7 +84,7 @@ const Subadmin = () => {
         </SectionTitleLineWithButton>
 
         <CardBox className="mb-6" hasTable>
-          <AddAdmin searchUser={searchUser} />
+          <AddAdmin searchUser={searchUser} />  
         </CardBox>
       </SectionMain>
     </>

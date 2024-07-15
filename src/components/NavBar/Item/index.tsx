@@ -24,6 +24,7 @@ export default function NavBarItem({ item }: Props) {
   const navBarItemLabelHoverStyle = useAppSelector((state) => state.style.navBarItemLabelHoverStyle)
 
   const userName = useAppSelector((state) => state.main.userName)
+  const role = useAppSelector((state) => state.main.role)
 
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
@@ -65,7 +66,7 @@ export default function NavBarItem({ item }: Props) {
             item.isDesktopNoLabel && item.icon ? 'lg:hidden' : ''
           }`}
         >
-          {itemLabel}
+          {itemLabel} {"  "} ({role})
         </span>
         {item.menu && (
           <Icon
