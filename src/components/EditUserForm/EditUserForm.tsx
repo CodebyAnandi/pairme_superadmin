@@ -8,53 +8,93 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
 
   console.log('00-0>>>', user)
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    gender: user?.gender || '',
-    dateOfBirth: user?.dateOfBirth || '',
-    countryCode: user?.countryCode || '',
-    phoneNumber: user?.phoneNumber || '',
-    profileImage: user?.profileImage || '',
-    language: user?.language || '',
-    teamsAndCondition: user?.teamsAndCondition || false,
-    address: user?.address || {
-      address: user?.address?.address || '',
-      country: user?.address?.country || '',
-      state: user?.address?.state || '',
-      city: user?.address?.city || '',
-      zipCode: user?.address?.zipCode || '',
+    name: user?.data?.name || '',
+    email: user?.data?.email || '',
+    gender: user?.data?.gender || '',
+    dateOfBirth: user?.data?.dateOfBirth || '',
+    countryCode: user?.data?.countryCode || '',
+    phoneNumber: user?.data?.phoneNumber || '',
+    profileImage: user?.data?.profileImage || '',
+    language: user?.data?.language || '',
+    teamsAndCondition: user?.data?.teamsAndCondition || false,
+    address: user?.data?.address || {
+      address: user?.data?.address?.address || '',
+      country: user?.data?.address?.country || '',
+      state: user?.data?.address?.state || '',
+      city: user?.data?.address?.city || '',
+      zipCode: user?.data?.address?.zipCode || '',
     },
-    professionalDetails: user?.professionalDetails || {
-      company_name: user?.professionalDetails?.company_name || '',
-      add_role: user?.professionalDetails?.add_role || '',
-      company_domain: user?.professionalDetails?.company_domain || '',
-      email: user?.professionalDetails?.email || '',
-      category: user?.professionalDetails?.category || '',
-      business_experience: user?.professionalDetails?.business_experience || '',
-      skills: user?.professionalDetails?.skills || '',
-      education: user?.professionalDetails?.education || '',
-      university: user?.professionalDetails?.university || '',
+    professionalDetails: user?.data?.professionalDetails || {
+      company_name: user?.data?.professionalDetails?.company_name || '',
+      add_role: user?.data?.professionalDetails?.add_role || '',
+      company_domain: user?.data?.professionalDetails?.company_domain || '',
+      email: user?.data?.professionalDetails?.email || '',
+      category: user?.data?.professionalDetails?.category || '',
+      business_experience: user?.data?.professionalDetails?.business_experience || '',
+      skills: user?.data?.professionalDetails?.skills || '',
+      education: user?.data?.professionalDetails?.education || '',
+      university: user?.data?.professionalDetails?.university || '',
     },
-    businessaddress: user?.businessaddress || {
-      address: user?.address?.address || '',
-      country: user?.address?.country || '',
-      state: user?.address?.state || '',
-      city: user?.address?.city || '',
-      zipCode: user?.address?.zipCode || '',
-      start_date: user?.address?.start_date || '',
+    businessaddress: user?.data?.businessaddress || {
+      address: user?.data?.address?.address || '',
+      country: user?.data?.address?.country || '',
+      state: user?.data?.address?.state || '',
+      city: user?.data?.address?.city || '',
+      zipCode: user?.data?.address?.zipCode || '',
+      start_date: user?.data?.address?.start_date || '',
     },
 
-    yourself: user?.yourself || [],
-    lookingfor: user?.lookingfor || [],
+    yourself: user?.data?.yourself || [],
+    lookingfor: user?.data?.lookingfor || [],
   })
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target
+  //   setFormData({
+    //     ...formData,
+    //     [name]: value,
+    //   })
+    // }
+    console.log("🚀 ~ EditUserForm ~ formData:", formData)
+
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
-  }
+    const { name, value } = e.target;
+  
+    // Splitting the name to access nested properties
+    const nameParts = name.split('.');
+  
+    if (nameParts.length === 1) {
+      // Direct field update
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else if (nameParts.length === 2) {
+      // Nested object update (e.g., professionalDetails.company_name)
+      setFormData({
+        ...formData,
+        [nameParts[0]]: {
+          ...formData[nameParts[0]],
+          [nameParts[1]]: value,
+        },
+      });
+    } else if (nameParts.length === 3) {
+      // Handling deeply nested objects (e.g., address.city)
+      setFormData({
+        ...formData,
+        [nameParts[0]]: {
+          ...formData[nameParts[0]],
+          [nameParts[1]]: {
+            ...formData[nameParts[0]][nameParts[1]],
+            [nameParts[2]]: value,
+          },
+        },
+      });
+    }
+  };
+  
+
+  console.log("formData",formData)
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -70,7 +110,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
       day = `0${day}`;
     }
 
-    return `${year}-${month}-${day}`;
+    return `${day}-${month}-${year}`;
   };
 
 
@@ -526,7 +566,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
           <button
             type="button"
             className="mr-2 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            onClick={() => handleSave(user?._id)}
+            onClick={() => handleSave(user?.data._id)}
           >
             Save
           </button>

@@ -13,9 +13,9 @@ import LayoutAuthenticated from '../layouts/Authenticated';
 import SectionMain from '../components/Section/Main';
 import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton';
 import CardBoxWidget from '../components/CardBox/Widget';
-import { useSampleClients, useSampleTransactions } from '../hooks/sampleData';
+import { useSampleClients } from '../hooks/sampleData';
 import CardBoxTransaction from '../components/CardBox/Transaction';
-import { Client, Transaction } from '../interfaces';
+// import { Client, Transaction } from '../interfaces';
 import CardBoxClient from '../components/CardBox/Client';
 import CardBox from '../components/CardBox';
 import { sampleChartData } from '../components/ChartLineSample/config';
@@ -24,29 +24,34 @@ import TableSampleClients from '../components/Table/SampleClients';
 import { getPageTitle } from '../config';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllUsers, getAllDeletedUsers , getAllSubAdmin } from '../stores/adminSlice';
+import {fetchReportUser} from '../stores/reportSlice'
 
 const Dashboard = () => {
   const { clients } = useSampleClients();
-  const { transactions } = useSampleTransactions();
+  // const { transactions } = useSampleTransactions();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllUsers());
     dispatch(getAllDeletedUsers());
     dispatch(getAllSubAdmin())
+    dispatch(fetchReportUser())
   },[]);
 
   const alldata = useSelector((state) => state?.loggedUser?.allUsers);
   const allDeletedUser = useSelector((state) => state?.loggedUser?.deletedUsers);
   const allSubAdmin = useSelector((state)=> state.loggedUser.allSubAdmin);
-  console.log("////", allDeletedUser);
+  const allReportedUser = useSelector((state)=> state.reportUser.reportUser.Allreports)
+  console.log("////", allReportedUser);
 
   const Client = alldata && alldata?.size;
   const allDeletedUserdata = allDeletedUser && allDeletedUser?.size;
-  const allSubAdminData = allSubAdmin && allSubAdmin.size;
-  // console.log(allSubAdminData);
+  const allSubAdminData = allSubAdmin && allSubAdmin?.size;
+  console.log(allSubAdmin);
 
-  const clientsListed = clients.slice(0, 4);
+  const latestFiveUser = alldata?.data.slice(-5)
+  const latestFiveReport = allReportedUser?.slice(-5)
+  // console.log("latestFiveUser",latestFiveUser)
 
   const [chartData, setChartData] = useState(sampleChartData());
 
@@ -69,7 +74,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
           <CardBoxWidget
-            trendLabel="12%"
+            trendLabel="User"
             trendType="up"
             trendColor="success"
             icon={mdiAccountMultiple}
@@ -78,21 +83,21 @@ const Dashboard = () => {
             label="User"
           />
           <CardBoxWidget
-            trendLabel="16%"
+            trendLabel="Deleted User"
             trendType="down"
             trendColor="danger"
-            icon={mdiCartOutline}
-            iconColor="info"
+            icon={mdiAccountMultiple}
+            iconColor="danger"
             number={allDeletedUserdata}
             numberPrefix=""
             label="Deleted User"
           />
           <CardBoxWidget
-            trendLabel="Overflow"
+            trendLabel="Sub Admin"
             trendType="warning"
             trendColor="warning"
-            icon={mdiChartTimelineVariant}
-            iconColor="danger"
+            icon={mdiAccountMultiple}
+            iconColor="warning"
             number={allSubAdminData}
             numberSuffix=""
             label="Sub Admin"
@@ -100,18 +105,29 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="flex flex-col justify-between">
-            {transactions.map((transaction: Transaction) => (
-              <CardBoxTransaction key={transaction.id} transaction={transaction} />
-            ))}
-          </div>
-          <div className="flex flex-col justify-between">
-            {clientsListed.map((client: Client) => (
-              <CardBoxClient key={client.id} client={client} />
-            ))}
-          </div>
-        </div>
+  <div className="flex flex-col justify-between">
+    <SectionTitleLineWithButton
+          icon={mdiChartTimelineVariant}
+          title="Last Five Users"
+          main
+        ></SectionTitleLineWithButton>
+    {latestFiveUser && latestFiveUser?.map((latestUser) => (
+      <CardBoxTransaction key={latestUser._id} latestFiveUser={latestUser} />
+    ))}
+  </div>
+  <div className="flex flex-col justify-between">
+  <SectionTitleLineWithButton
+          icon={mdiChartTimelineVariant}
+          title="Last Five Report"
+          main
+        ></SectionTitleLineWithButton>
+    {latestFiveReport && latestFiveReport?.map((latestReport) => (
+      <CardBoxClient key={latestReport._id} latestFiveReport={latestReport} />
+    ))}
+  </div>
+</div>
 
+{/* 
         <SectionTitleLineWithButton icon={mdiChartPie} title="Trends overview">
           <Button icon={mdiReload} color="whiteDark" onClick={fillChartData} />
         </SectionTitleLineWithButton>
@@ -122,7 +138,7 @@ const Dashboard = () => {
 
         <CardBox hasTable>
           <TableSampleClients />
-        </CardBox>
+        </CardBox> */}
       </SectionMain>
     </>
   );

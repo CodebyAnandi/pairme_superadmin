@@ -682,7 +682,7 @@ const UserIDWiseData = () => {
         </div>
       ) : null}
 
-      {userProfessionalDetails && userProfessionalDetails.length > 0 ? (
+      {userProfessionalDetails && userProfessionalDetails?.company_name?.length > 0 ? (
         <div className="rounded-lg p-5 shadow-lg mt-5">
           <div>
             <div className="text-xl font-bold mb-2 flex gap-2 items-center">
@@ -740,8 +740,8 @@ const UserIDWiseData = () => {
               Best Describe Yourself
             </div>
 
-            <div className="grid grid-cols-1  gap-4 mx-5">
-              <ul className="list-disc flex">
+            <div className="grid grid-cols-0  gap-4 mx-5">
+              <ul className="list-disc">
                 {userYourself.map((item, index) => (
                   <li key={index} className="flex-grow">
                     {item}
@@ -762,7 +762,7 @@ const UserIDWiseData = () => {
             </div>
 
             <div className="grid grid-cols-1  gap-4 mx-5">
-              <ul className="list-disc flex">
+              <ul className="list-disc ">
                 {userLookingfor.map((item, index) => (
                   <li key={index} className="flex-grow">
                     {item}

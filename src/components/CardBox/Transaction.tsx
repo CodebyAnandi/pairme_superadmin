@@ -1,51 +1,27 @@
-import { mdiCashMinus, mdiCashPlus, mdiCreditCard, mdiReceipt } from '@mdi/js'
 import React from 'react'
-import { Transaction } from '../../interfaces'
-import CardBox from '.'
-import IconRounded from '../Icon/Rounded'
-import PillTag from '../PillTag'
+import CardBox from '.' // Adjust the path as per your project structure
 
-type Props = {
-  transaction: Transaction
-}
-
-const CardBoxTransaction = (props: Props) => {
-  const icon = {
-    withdraw: mdiCashMinus,
-    deposit: mdiCashPlus,
-    invoice: mdiReceipt,
-    payment: mdiCreditCard,
-  }[props.transaction.type]
-
-  const typeColor = () => {
-    switch (props.transaction.type) {
-      case 'withdraw':
-        return 'danger'
-      case 'deposit':
-        return 'success'
-      case 'invoice':
-        return 'warning'
-      case 'payment':
-        return 'info'
-    }
-  }
-
+const CardBoxTransaction = ({ latestFiveUser }) => {
+  // console.log('.........', latestFiveUser)
   return (
     <CardBox className="mb-6 last:mb-0">
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="flex flex-col md:flex-row items-center justify-start mb-6 md:mb-0">
-          <IconRounded icon={icon} color={typeColor()} className="md:mr-6 mb-6 md:mb-0" />
-          <div className="text-center space-y-1 md:text-left md:mr-6">
-            <h4 className="text-xl">${props.transaction.amount}</h4>
-            <p className="text-gray-500 dark:text-slate-400">
-              <b>{props.transaction.date}</b> via {props.transaction.business}
-            </p>
-          </div>
-        </div>
-        <div className="text-center md:text-right space-y-2">
-          <p className="text-sm text-gray-500">{props.transaction.name}</p>
-          <div>
-            <PillTag color={typeColor()} label={props.transaction.type} small />
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden mb-6 last:mb-0">
+        <div className="flex flex-col md:flex-row items-center justify-between p-4">
+          <div className="flex items-center space-x-4">
+            {/* Assuming you have an appropriate profile image */}
+            <img
+              className="h-16 w-16 rounded-full object-cover"
+              src={`${process.env.NEXT_PUBLIC_BASE_URL}${latestFiveUser.profileImage || process.env.DEFOULTIMAGE}`}
+              alt={latestFiveUser.name || 'Default Name'}
+            />
+            <div className="text-center md:text-left">
+              <h4 className="text-xl font-semibold">{latestFiveUser.name}</h4>
+              <p className="text-gray-500 dark:text-slate-400">
+                <b>Email:</b> {latestFiveUser.email}
+                <br />
+                <b>Phone:</b> {latestFiveUser.phoneNumber}
+              </p>
+            </div>
           </div>
         </div>
       </div>

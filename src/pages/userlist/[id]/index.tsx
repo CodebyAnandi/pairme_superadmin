@@ -185,7 +185,7 @@ const UserList = () => {
           )
           const userData = res.data
           console.log("---->>>2222", userData)
-          setCurrentUser(userData?.data) // Set current user data
+          setCurrentUser(userData) // Set current user data
         } catch (err) {
           console.error('Error fetching user data:', err.response || err.message || err)
         }
@@ -218,7 +218,7 @@ const UserList = () => {
       <SectionMain>
         <SectionTitleLineWithButton icon={mdiAccount} title="User Details" main>
           <div className="flex justify-end items-center">
-            {currentUser && !currentUser.isDeleted && (currentUser.role === 'user' || currentUser.role === 'sub_admin') && (
+            {currentUser && !currentUser.data?.isDeleted && (currentUser.data?.role === 'user' || currentUser.data?.role === 'sub_admin') && (
               <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
                 icon={mdiPencil}
                 onClick={() => setIsEditing(true)} // Directly open edit modal

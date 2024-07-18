@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { mdiEye, mdiTrashCan } from '@mdi/js'
 import { useRouter } from 'next/router'
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllSubAdmin } from '../../stores/adminSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllSubAdmin } from '../../stores/adminSlice'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
@@ -22,17 +22,18 @@ const AddAdmin = ({ searchUser = '' }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [isModalAddUserActive, setIsModalAddUserActive] = useState(false)
   const [showDeleteUsers, setShowDeleteUsers] = useState(false)
-  const dispatch = useDispatch();
-  const allSubAdmin = useSelector((state)=> state.loggedUser.allSubAdmin);
-  console.log("-=-=mm>.", subAdmin);
+  const dispatch = useDispatch()
+  const allSubAdmin = useSelector((state) => state.loggedUser.allSubAdmin)
+  console.log('-=-=mm>.', subAdmin)
+  const data = useSelector((state) => state.loggedUser.userInfo);
 
   useEffect(() => {
-    setSubAdmin(allSubAdmin?.data || []);
-  }, [subAdmin]);
+    setSubAdmin(allSubAdmin?.data || [])
+  }, [subAdmin])
 
   useEffect(() => {
     dispatch(getAllSubAdmin())
-  }, [dispatch]);
+  }, [dispatch])
 
   const clientsPaginated = (showDeleteUsers ? subAdmin : allUser)?.slice(
     perPage * currentPage,
@@ -47,12 +48,12 @@ const AddAdmin = ({ searchUser = '' }) => {
   // const [isModalTrashActive, setIsModalTrashActive] = useState(false)
 
   const getTodayDate = () => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${dd}-${mm}-${yyyy}`;
-  };
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0') // Months are zero-based
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${dd}-${mm}-${yyyy}`
+  }
 
   const [newUser, setNewUser] = useState({
     name: '',
@@ -68,7 +69,6 @@ const AddAdmin = ({ searchUser = '' }) => {
     },
   })
   // console.log('newUser', newUser)
-
 
   const handleAddUserChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -90,7 +90,10 @@ const AddAdmin = ({ searchUser = '' }) => {
 
   const submitForm = async () => {
     try {
-      const res = await axiosInstanceAuth.post(`${process.env.NEXT_PUBLIC_BASE_URL}admin/createSubAdmin`, newUser)
+      const res = await axiosInstanceAuth.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}admin/createSubAdmin`,
+        newUser
+      )
       console.log('SubAdmin created successfully', res.data)
       // Optionally, you can refresh the list of sub-admins after successful creation
       getAdmindata()
@@ -115,7 +118,9 @@ const AddAdmin = ({ searchUser = '' }) => {
   // Get All Admin Show
   const getAdmindata = async () => {
     try {
-      const res = await axiosInstanceAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}admin/getAllSubAdmin`)
+      const res = await axiosInstanceAuth.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}admin/getAllSubAdmin`
+      )
       const myData = res?.data
       setAllUser(myData?.data || [])
       console.log('getAllSubAdmin---->', myData)
@@ -210,16 +215,16 @@ const AddAdmin = ({ searchUser = '' }) => {
             />
           </div>
           <div>
-      <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-      <input
-        type="date"
-        name="dateOfBirth"
-        value={newUser.dateOfBirth}
-        onChange={handleAddUserChange}
-        max={getTodayDate()}
-        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-      />
-    </div>
+            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <input
+              type="date"
+              name="dateOfBirth"
+              value={newUser.dateOfBirth}
+              onChange={handleAddUserChange}
+              max={getTodayDate()}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
@@ -331,12 +336,23 @@ const AddAdmin = ({ searchUser = '' }) => {
 
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
                     <Buttons type="justify-center " noWrap>
-                      <Button
-                        color="info"
-                        icon={mdiEye}
-                        onClick={() => handleClickEye(d?._id)}
-                        small
-                      />
+                      {data && data.length > 0 && data[0].permissions.role === 'admin' ? (
+                        <Button
+                          color="info"
+                          icon={mdiEye}
+                          onClick={() => handleClickEye(d?._id)}
+                          small
+                          outline
+                          disabled
+                        />
+                      ) : (
+                        <Button
+                          color="info"
+                          icon={mdiEye}
+                          onClick={() => handleClickEye(d?._id)}
+                          small
+                        />
+                      )}
                       <Button
                         color="danger"
                         icon={mdiTrashCan}
