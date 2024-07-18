@@ -295,7 +295,7 @@ const AddAdmin = ({ searchUser = '' }) => {
               className="ml-2"
             />
           </div>
-          <Button label="add" color="contrast" onClick={() => setIsModalAddUserActive(true)} />
+          <Button label="Add Sub Admin" color="contrast" onClick={() => setIsModalAddUserActive(true)} />
         </div>
       </div>
 

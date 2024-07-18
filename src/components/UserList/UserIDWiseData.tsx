@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import Button from '../../components/Button'
 import { useSampleClients } from '../../hooks/sampleData'
 
-import Image, { type StaticImageData } from 'next/image'
-import pairme from '../../assets/img/boy.jpg'
+import Image from 'next/image'
+// import pairme from '../../assets/img/boy.jpg'
 
 import { FaHome } from 'react-icons/fa'
 import { PiBuildingsBold } from 'react-icons/pi'
@@ -20,7 +20,7 @@ import { LuFiles } from 'react-icons/lu'
 import { IoMdClose } from 'react-icons/io'
 import { mdiPencil } from '@mdi/js'
 import axiosInstanceAuth from '../../apiInstances/axiosInstanceAuth'
-import { BACKEND_BASE_URL } from '../../apiInstances/baseurl'
+// import { BACKEND_BASE_URL } from '../../apiInstances/baseurl'
 
 import Modal from 'react-responsive-modal'
 import 'react-responsive-modal/styles.css'
@@ -116,34 +116,42 @@ const UserIDWiseData = () => {
   const [userBio, setUserBio] = useState<any>([])
   const [userFile, setUserFile] = useState<any>([])
   const [userProfileImg, setUserProfileImg] = useState<any>([])
-  console.log('🚀 ~ UserIDWiseData ~ userProfileImg:', userProfileImg)
+  // console.log('🚀 ~ UserIDWiseData ~ userProfileImg:', userProfileImg)
+  
 
   // const [userFiles, setUserFiles] = useState({})
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentFile, setCurrentFile] = useState('')
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
 
-  const openModal = (fileKey) => {
-    setCurrentFile(userFile[fileKey])
-    setIsModalOpen(true)
-  }
+  const openFileModal = (fileKey) => {
+    setCurrentFile(userFile[fileKey]);
+    setIsFileModalOpen(true);
+  };
 
-  const closeModal = () => {
-    setIsModalOpen(false)
+  const openPermissionsModal = ()=>{
+    setIsPermissionsModalOpen(true)
   }
+  
+  // Function to close file modal
+  const closeFileModal = () => {
+    setIsFileModalOpen(false);
+  };
+  
 
   const [open, setOpen] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
   const [userMedia, setUserMedia] = useState([])
 
-  const images = [
-    pairme,
-    pairme,
-    pairme,
-    pairme,
-    pairme,
-    pairme,
-    // Add more images as needed
-  ]
+  // const images = [
+  //   pairme,
+  //   pairme,
+  //   pairme,
+  //   pairme,
+  //   pairme,
+  //   pairme,
+  //   // Add more images as needed
+  // ]
 
   // const onImageClick = (index) => {
   //   setSelectedImage(userImage[index])
@@ -282,41 +290,53 @@ const UserIDWiseData = () => {
   }, [router.query.id])
 
 
-    const [formData, setFormData] = useState({
-      permissions: {
-        delete: userData?.permissions?.delete || false,
-        update: userData?.permissions?.update || false,
-        report: userData?.permissions?.report || false,
-      },
-    });
-  
-    const handleCheckboxChange = (event) => {
-      const { name, checked } = event.target;
-      setFormData((prevFormData) => ({
-        ...prevFormData,
+  // const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    permissions: {
+      delete: false,
+      update: false,
+      report: false,
+    },
+  });
+
+  useEffect(() => {
+    if (userData) {
+      setFormData({
         permissions: {
-          ...prevFormData.permissions,
-          [name]: checked,
+          delete: userData.permissions?.delete || false,
+          update: userData.permissions?.update || false,
+          report: userData.permissions?.report || false,
         },
-      }));
-    };
-  
-    const handleSave = async () => {
-      try {
-        const updatedPermissions = {
-          permissions: formData.permissions,
-        };
-        const userId = userData._id; // Assuming userData contains the user's _id
-  
-        await axiosInstanceAuth.put(`/api/updateUserPermission/${userId}`, updatedPermissions);
-  
-        setIsModalOpen(false); // Close modal after successful update
-      } catch (error) {
-        console.error('Error updating user permissions:', error.response || error.message || error);
-        // Handle error state or show error message to the user
-      }
-    };
-  
+      });
+    }
+  }, [userData]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      permissions: {
+        ...prevFormData.permissions,
+        [name]: checked,
+      },
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const updatedPermissions = {
+        permissions: formData.permissions,
+      };
+      const userId = userData._id; // Assuming userData contains the user's _id
+
+      await axiosInstanceAuth.put(`/api/updateUserPermission/${userId}`, updatedPermissions);
+
+      setIsPermissionsModalOpen(false); // Close modal after successful update
+    } catch (error) {
+      console.error('Error updating user permissions:', error.response || error.message || error);
+      // Handle error state or show error message to the user
+    }
+  };
 
   return (
     <>
@@ -426,27 +446,66 @@ const UserIDWiseData = () => {
       
 
       <div>
-        {userData?.role === 'sub_admin' ? (
-          <div className="rounded-lg p-5 shadow-lg mt-5">
-            <div className="mt-5 flex justify-between items-center">
-              <div className="text-xl font-bold mb-2 flex gap-2 items-center">
-                <RiContactsFill /> Permissions
-              </div>
-              <Button
-                className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
-                icon={mdiPencil}
-                onClick={() => setIsModalOpen(true)} // Directly open edit modal
-              >
-                <span className="ml-2">Edit</span>
-              </Button>
+      {userData?.role === 'sub_admin' ? (
+        <div className="rounded-lg p-5 shadow-lg mt-5">
+          <div className="mt-5 flex justify-between items-center">
+            <div className="text-xl font-bold mb-2 flex gap-2 items-center">
+              <RiContactsFill /> Permissions
             </div>
+            <Button
+              className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
+              icon={mdiPencil}
+              onClick={() => openPermissionsModal()}
+            >
+              <span className="ml-2">Edit</span>
+            </Button>
+          </div>
+          <div>
+            <ul className="list-disc ml-5">
+              <li className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={userData?.permissions?.delete || false}
+                  readOnly
+                  className="mr-2"
+                />
+                Delete
+              </li>
+              <li className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={userData?.permissions?.update || false}
+                  readOnly
+                  className="mr-2"
+                />
+                Update
+              </li>
+              <li className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={userData?.permissions?.report || false}
+                  readOnly
+                  className="mr-2"
+                />
+                Report
+              </li>
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
+      {isPermissionsModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-5 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Edit Permissions</h2>
             <div>
               <ul className="list-disc ml-5">
                 <li className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={userData?.permissions?.delete || false}
-                    readOnly
+                    name="delete"
+                    checked={formData.permissions.delete}
+                    onChange={handleCheckboxChange}
                     className="mr-2"
                   />
                   Delete
@@ -454,8 +513,9 @@ const UserIDWiseData = () => {
                 <li className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={userData?.permissions?.update || false}
-                    readOnly
+                    name="update"
+                    checked={formData.permissions.update}
+                    onChange={handleCheckboxChange}
                     className="mr-2"
                   />
                   Update
@@ -463,70 +523,30 @@ const UserIDWiseData = () => {
                 <li className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={userData?.permissions?.report || false}
-                    readOnly
+                    name="report"
+                    checked={formData.permissions.report}
+                    onChange={handleCheckboxChange}
                     className="mr-2"
                   />
                   Report
                 </li>
               </ul>
             </div>
-          </div>
-        ) : null}
-
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-5 rounded-lg shadow-lg">
-              <h2 className="text-xl font-bold mb-4">Edit Permissions</h2>
-              <div>
-                <ul className="list-disc ml-5">
-                  <li className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="delete"
-                      // checked={userData?.permissions?.delete || false}
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Delete
-                  </li>
-                  <li className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="update"
-                      // checked={userData?.permissions?.update || false}
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Update
-                  </li>
-                  <li className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="report"
-                      // checked={userData?.permissions?.report || false}
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Report
-                  </li>
-                </ul>
-              </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded mr-2"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSave}>
-                  Save
-                </button>
-              </div>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                onClick={() => setIsPermissionsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSave}>
+                Save
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
 
       {userBio && userBio?.bio?.length > 0 ? (
         <div className="rounded-lg p-5 shadow-lg mt-5">
@@ -563,7 +583,7 @@ const UserIDWiseData = () => {
                         </td>
                         <td>
                           <button
-                            onClick={() => openModal(fileKey)}
+                            onClick={() => openFileModal(fileKey)}
                             className="bg-blue-500 text-white rounded px-3 py-2 flex items-center gap-2"
                           >
                             <FaFileLines />
@@ -576,12 +596,12 @@ const UserIDWiseData = () => {
               </table>
             )}
 
-            {isModalOpen && (
+            {isFileModalOpen && (
               <div className="modal-overlay mt-5">
                 <div className="flex justify-end mb-2">
                   <button
                     className="bg-gray-200 text-black rounded px-3 py-2 flex items-end gap-2"
-                    onClick={closeModal}
+                    onClick={closeFileModal}
                   >
                     <IoMdClose className="text-black" size={22} />
                   </button>

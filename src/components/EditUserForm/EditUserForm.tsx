@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
-// import PropTypes from 'prop-types';
-import { updateUserProfile } from '../../stores/adminSlice'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react';
+import { updateUserProfile } from '../../stores/adminSlice';
+import { useDispatch } from 'react-redux';
 
 const EditUserForm = ({ user, onSave, onCancel }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  console.log('00-0>>>', user)
   const [formData, setFormData] = useState({
     name: user?.data?.name || '',
     email: user?.data?.email || '',
@@ -43,58 +41,63 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
       zipCode: user?.data?.address?.zipCode || '',
       start_date: user?.data?.address?.start_date || '',
     },
-
     yourself: user?.data?.yourself || [],
     lookingfor: user?.data?.lookingfor || [],
-  })
+  });
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target
-  //   setFormData({
-    //     ...formData,
-    //     [name]: value,
-    //   })
-    // }
-    console.log("🚀 ~ EditUserForm ~ formData:", formData)
+  const [profileData, setProfileData] = useState({
+    bio: user?.profileData?.bio || '',
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
-    // Splitting the name to access nested properties
-    const nameParts = name.split('.');
-  
-    if (nameParts.length === 1) {
-      // Direct field update
-      setFormData({
-        ...formData,
+
+    if (name === 'bio') {
+      setProfileData({
+        ...profileData,
         [name]: value,
       });
-    } else if (nameParts.length === 2) {
-      // Nested object update (e.g., professionalDetails.company_name)
-      setFormData({
-        ...formData,
-        [nameParts[0]]: {
-          ...formData[nameParts[0]],
-          [nameParts[1]]: value,
-        },
-      });
-    } else if (nameParts.length === 3) {
-      // Handling deeply nested objects (e.g., address.city)
-      setFormData({
-        ...formData,
-        [nameParts[0]]: {
-          ...formData[nameParts[0]],
-          [nameParts[1]]: {
-            ...formData[nameParts[0]][nameParts[1]],
-            [nameParts[2]]: value,
+    } else {
+      const nameParts = name.split('.');
+
+      if (nameParts.length === 1) {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else if (nameParts.length === 2) {
+        setFormData({
+          ...formData,
+          [nameParts[0]]: {
+            ...formData[nameParts[0]],
+            [nameParts[1]]: value,
           },
-        },
-      });
+        });
+      } else if (nameParts.length === 3) {
+        setFormData({
+          ...formData,
+          [nameParts[0]]: {
+            ...formData[nameParts[0]],
+            [nameParts[1]]: {
+              ...formData[nameParts[0]][nameParts[1]],
+              [nameParts[2]]: value,
+            },
+          },
+        });
+      }
     }
   };
-  
 
-  console.log("formData",formData)
+  const handleSave = (id) => {
+    dispatch(updateUserProfile({ id, userData: formData, profileData }))
+      .then((response) => {
+        onSave();
+      })
+      .catch((error) => {
+        console.error('Error updating user data:', error);
+      });
+  };
+
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -113,21 +116,6 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
     return `${day}-${month}-${year}`;
   };
 
-
-  // useEffect(()=>{
-  //   dispatch(updateUserProfile(id))
-  // },[])
-
-  const handleSave = (id) => {
-    dispatch(updateUserProfile({ id, userData: formData }))
-      .then((response) => {
-        // console.log('User data updated successfully:', response)
-        onSave()
-      })
-      .catch((error) => {
-        console.error('Error updating user data:', error)
-      })
-  }
 
   return (
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -243,6 +231,23 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
             </label>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 gap-4">
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Bio:
+            <input
+              type="text"
+              name="bio"  
+              value={profileData.bio}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </label>
+        </div>
+        </div>
+
+
 
         <p className=" font-bold">Address</p>
 

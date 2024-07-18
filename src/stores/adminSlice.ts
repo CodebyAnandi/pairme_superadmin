@@ -81,9 +81,15 @@ export const getAllSubAdmin = createAsyncThunk(
 // Define the async thunk to update user data
 export const updateUserProfile = createAsyncThunk(
   'loggedUser/updateUserProfile',
-  async ({ id, userData }, { rejectWithValue }) => {
+  async ({ id, userData, profileData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}api/updateUserData/${id}`, userData);
+      // Merge userData and profileData into one object
+      const payload = {
+        ...userData,
+        profileData: { ...profileData },
+      };
+      
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}api/updateUserData/${id}`, payload);
       return response.data;
     } catch (error) {
       console.error('Error updating user data:', error);

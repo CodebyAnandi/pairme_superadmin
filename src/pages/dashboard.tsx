@@ -108,7 +108,7 @@ const Dashboard = () => {
   <div className="flex flex-col justify-between">
     <SectionTitleLineWithButton
           icon={mdiChartTimelineVariant}
-          title="Last Five Users"
+          title="Latest Five Users"
           main
         ></SectionTitleLineWithButton>
     {latestFiveUser && latestFiveUser?.map((latestUser) => (
@@ -118,7 +118,7 @@ const Dashboard = () => {
   <div className="flex flex-col justify-between">
   <SectionTitleLineWithButton
           icon={mdiChartTimelineVariant}
-          title="Last Five Report"
+          title="Latest Five Report"
           main
         ></SectionTitleLineWithButton>
     {latestFiveReport && latestFiveReport?.map((latestReport) => (

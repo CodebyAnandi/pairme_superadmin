@@ -30,7 +30,7 @@ const ReportCard = ({ latestFiveReport }) => {
           </div>
         </div>
 
-        <PillTag color={pillColor()} icon={pillIcon} label="Reported" />
+        <PillTag color={pillColor()} label="Reported" />
       </div>
     </CardBox>
   );
