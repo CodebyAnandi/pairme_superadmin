@@ -1,7 +1,119 @@
 
+// 'use client'
+
+// import { mdiAccount, mdiArrowLeft, mdiPencil } from '@mdi/js'
+// import Head from 'next/head'
+// import { useRouter } from 'next/router'
+// import React, { useState, useEffect } from 'react'
+// import CardBox from '../../../components/CardBox'
+// import LayoutAuthenticated from '../../../layouts/Authenticated'
+// import SectionMain from '../../../components/Section/Main'
+// import SectionTitleLineWithButton from '../../../components/Section/TitleLineWithButton'
+// import TableUserList from "../../../components/AddUser/AddUserData"
+// import UserIDWiseData from '../../../components/UserList/UserIDWiseData'
+// import { getPageTitle } from '../../../config'
+// import Button from '../../../components/Button'
+// import Buttons from '../../../components/Buttons'
+// import EditUserForm from '../../../components/EditUserForm/EditUserForm' // Corrected import path
+// import Modal from 'react-responsive-modal'
+// import 'react-responsive-modal/styles.css' // Import the modal component if not already imported
+// import axiosInstanceAuth from '../../../apiInstances/axiosInstanceAuth'
+
+// const UserList = () => {
+//   const router = useRouter()
+//   const { id } = router.query
+//   console.log('Fetching user data for ID:00000++>', id)
+
+//   const [isEditing, setIsEditing] = useState(false)
+//   const [currentUser, setCurrentUser] = useState(null)
+//   console.log("currentUser", currentUser)
+
+//   useEffect(() => {
+//     const fetchUserData = async () => {
+//       if (id) {
+//         try {
+//           // Fetch user data based on ID
+//           const res = await axiosInstanceAuth.get(
+//             `${process.env.NEXT_PUBLIC_BASE_URL}admin/findUserData/${id}`
+//           )
+//           const userData = res.data
+//           console.log("---->>>2222", userData)
+//           setCurrentUser(userData) // Set current user data
+//         } catch (err) {
+//           console.error('Error fetching user data:', err.response || err.message || err)
+//         }
+//       }
+//     }
+
+//     fetchUserData()
+//   }, [id])
+
+//   const handleBackAction = () => {
+//     router.push(`/adduser`)
+//   }
+
+//   const handleSave = (updatedUser) => {
+//     // Handle save logic here (e.g., update user data via API)
+//     console.log('Updated User Data:', updatedUser)
+//     setIsEditing(false) // Close modal after saving
+//   }
+
+//   const handleCancel = () => {
+//     setIsEditing(false) // Close modal on cancel
+//   }
+
+//   return (
+//     <>
+//       <Head>
+//         <title>{getPageTitle()}</title>
+//       </Head>
+
+//       <SectionMain>
+//         <SectionTitleLineWithButton icon={mdiAccount} title="User Details" main>
+//           <div className="flex justify-end items-center">
+//             {currentUser && !currentUser.data?.isDeleted && (currentUser.data?.role === 'user' || currentUser.data?.role === 'sub_admin') && (
+//               <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
+//                 icon={mdiPencil}
+//                 onClick={() => setIsEditing(true)} // Directly open edit modal
+//               >
+//                 <span className="ml-2">Edit</span>
+//               </Button>
+//             )}
+//           </div>
+//         </SectionTitleLineWithButton>
+
+//         <div onClick={handleBackAction}>
+//           <Buttons className="mb-3">
+//             <Button type="submit" label="Back" icon={mdiArrowLeft} className="rounded-lg" />
+//           </Buttons>
+//         </div>
+
+//         <CardBox className="mb-6">
+//           <UserIDWiseData />
+//         </CardBox>
+
+//         <CardBox className="mb-6" hasTable>
+//           <TableUserList />
+//         </CardBox>
+
+//         <Modal open={isEditing} onClose={handleCancel} center>
+//           <EditUserForm user={currentUser} onSave={handleSave} onCancel={handleCancel} />
+//         </Modal>
+//       </SectionMain>
+//     </>
+//   )
+// }
+
+// UserList.getLayout = function getLayout(page) {
+//   return <LayoutAuthenticated>{page}</LayoutAuthenticated>
+// }
+
+// export default UserList
+
+
 'use client'
 
-import { mdiAccount, mdiArrowLeft, mdiPencil } from '@mdi/js'
+import { mdiAccount, mdiArrowLeft, mdiPencil, mdiMapMarker } from '@mdi/js'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
@@ -14,31 +126,35 @@ import UserIDWiseData from '../../../components/UserList/UserIDWiseData'
 import { getPageTitle } from '../../../config'
 import Button from '../../../components/Button'
 import Buttons from '../../../components/Buttons'
-import EditUserForm from '../../../components/EditUserForm/EditUserForm' // Corrected import path
+import EditUserForm from '../../../components/EditUserForm/EditUserForm'
 import Modal from 'react-responsive-modal'
-import 'react-responsive-modal/styles.css' // Import the modal component if not already imported
+import 'react-responsive-modal/styles.css'
 import axiosInstanceAuth from '../../../apiInstances/axiosInstanceAuth'
+import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api'
 
 const UserList = () => {
   const router = useRouter()
   const { id } = router.query
-  console.log('Fetching user data for ID:00000++>', id)
+  console.log('Fetching user data for ID:', id)
 
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   console.log("currentUser", currentUser)
+
+  const latitude = currentUser?.data?.businessaddress?.latitude;
+  const longitude = currentUser?.data?.businessaddress?.longitude
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (id) {
         try {
-          // Fetch user data based on ID
           const res = await axiosInstanceAuth.get(
             `${process.env.NEXT_PUBLIC_BASE_URL}admin/findUserData/${id}`
           )
           const userData = res.data
-          console.log("---->>>2222", userData)
-          setCurrentUser(userData) // Set current user data
+          console.log("User Data:", userData)
+          setCurrentUser(userData)
         } catch (err) {
           console.error('Error fetching user data:', err.response || err.message || err)
         }
@@ -53,13 +169,25 @@ const UserList = () => {
   }
 
   const handleSave = (updatedUser) => {
-    // Handle save logic here (e.g., update user data via API)
     console.log('Updated User Data:', updatedUser)
-    setIsEditing(false) // Close modal after saving
+    setIsEditing(false)
   }
 
   const handleCancel = () => {
-    setIsEditing(false) // Close modal on cancel
+    setIsEditing(false)
+  }
+
+  const handleOpenMapModal = () => {
+    setIsMapModalOpen(true)
+  }
+
+  const handleCloseMapModal = () => {
+    setIsMapModalOpen(false)
+  }
+
+  const mapStyles = {
+    width: '500px',
+    height: '500px',
   }
 
   return (
@@ -72,12 +200,21 @@ const UserList = () => {
         <SectionTitleLineWithButton icon={mdiAccount} title="User Details" main>
           <div className="flex justify-end items-center">
             {currentUser && !currentUser.data?.isDeleted && (currentUser.data?.role === 'user' || currentUser.data?.role === 'sub_admin') && (
-              <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
-                icon={mdiPencil}
-                onClick={() => setIsEditing(true)} // Directly open edit modal
-              >
-                <span className="ml-2">Edit</span>
-              </Button>
+              <>
+                <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold"
+                  icon={mdiPencil}
+                  onClick={() => setIsEditing(true)}
+                >
+                  <span className="ml-2">Edit</span>
+                </Button>
+
+                <Button className="flex items-center bg-[#FFFFFF] rounded-full p-2 text-xl font-bold ml-4"
+                  icon={mdiMapMarker}
+                  onClick={handleOpenMapModal}
+                >
+                  <span className="ml-2">Map</span>
+                </Button>
+              </>
             )}
           </div>
         </SectionTitleLineWithButton>
@@ -98,6 +235,21 @@ const UserList = () => {
 
         <Modal open={isEditing} onClose={handleCancel} center>
           <EditUserForm user={currentUser} onSave={handleSave} onCancel={handleCancel} />
+        </Modal>
+
+        <Modal open={isMapModalOpen} onClose={handleCloseMapModal} center>
+          <h2>Location Map</h2>
+          <div style={{ padding: '20px' }}>
+            <LoadScript googleMapsApiKey="AIzaSyCBr9tGMZM04jtfh_PrOZgm2_iHJMMLDlU">
+              <GoogleMap
+                mapContainerStyle={mapStyles}
+                zoom={12}
+                center={{ lat: latitude, lng: longitude}}
+              >
+                <Marker position={{ lat: latitude, lng: longitude }} />
+              </GoogleMap>
+            </LoadScript>
+          </div>
         </Modal>
       </SectionMain>
     </>

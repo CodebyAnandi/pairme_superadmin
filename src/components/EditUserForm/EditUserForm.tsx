@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { updateUserProfile } from '../../stores/adminSlice';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react'
+import { updateUserProfile } from '../../stores/adminSlice'
+import { useDispatch } from 'react-redux'
 
 const EditUserForm = ({ user, onSave, onCancel }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const [formData, setFormData] = useState({
     name: user?.data?.name || '',
@@ -43,28 +43,28 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
     },
     yourself: user?.data?.yourself || [],
     lookingfor: user?.data?.lookingfor || [],
-  });
+  })
 
   const [profileData, setProfileData] = useState({
     bio: user?.profileData?.bio || '',
-  });
+  })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
     if (name === 'bio') {
       setProfileData({
         ...profileData,
         [name]: value,
-      });
+      })
     } else {
-      const nameParts = name.split('.');
+      const nameParts = name.split('.')
 
       if (nameParts.length === 1) {
         setFormData({
           ...formData,
           [name]: value,
-        });
+        })
       } else if (nameParts.length === 2) {
         setFormData({
           ...formData,
@@ -72,7 +72,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
             ...formData[nameParts[0]],
             [nameParts[1]]: value,
           },
-        });
+        })
       } else if (nameParts.length === 3) {
         setFormData({
           ...formData,
@@ -83,39 +83,37 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
               [nameParts[2]]: value,
             },
           },
-        });
+        })
       }
     }
-  };
+  }
 
   const handleSave = (id) => {
     dispatch(updateUserProfile({ id, userData: formData, profileData }))
       .then((response) => {
-        onSave();
+        onSave()
       })
       .catch((error) => {
-        console.error('Error updating user data:', error);
-      });
-  };
-
+        console.error('Error updating user data:', error)
+      })
+  }
 
   const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    let month = today.getMonth() + 1;
-    let day = today.getDate();
+    const today = new Date()
+    const year = today.getFullYear()
+    let month = today.getMonth() + 1
+    let day = today.getDate()
 
     // Pad month and day with leading zeros if necessary
     if (month < 10) {
-      month = `0${month}`;
+      month = `0${month}`
     }
     if (day < 10) {
-      day = `0${day}`;
+      day = `0${day}`
     }
 
-    return `${day}-${month}-${year}`;
-  };
-
+    return `${day}-${month}-${year}`
+  }
 
   return (
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -164,19 +162,19 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-        <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Date of Birth:
-          <input
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            max={getCurrentDate()} // Set max date to current date
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </label>
-      </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Date of Birth:
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                max={getCurrentDate()} // Set max date to current date
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </label>
+          </div>
           <div>
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Country Code:
@@ -233,21 +231,19 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Bio:
-            <input
-              type="text"
-              name="bio"  
-              value={profileData.bio}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </label>
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Bio:
+              <input
+                type="text"
+                name="bio"
+                value={profileData.bio}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </label>
+          </div>
         </div>
-        </div>
-
-
 
         <p className=" font-bold">Address</p>
 
@@ -443,6 +439,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
             </label>
           </div>
         </div>
+
         <p className=" font-bold">ProfessionalDetails</p>
 
         <div className="grid grid-cols-2 gap-4">
@@ -539,6 +536,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
               />
             </label>
           </div>
+
           <div>
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Education:
@@ -567,6 +565,7 @@ const EditUserForm = ({ user, onSave, onCancel }) => {
             </label>
           </div>
         </div>
+
         <div className="flex justify-end mt-4">
           <button
             type="button"
